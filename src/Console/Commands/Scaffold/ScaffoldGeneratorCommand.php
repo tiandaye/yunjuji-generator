@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-13 17:51:43
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-13 17:57:32
+ * @Last Modified time: 2017-09-13 22:00:31
  */
 
 namespace Yunjuji\Generator\Console\Commands\Scaffold;
@@ -42,6 +42,6 @@ class ScaffoldGeneratorCommand extends Command
      */
     public function handle()
     {
-        echo "yunjuji:scaffold";
+        echo "yunjuji:scaffold command";
     }
 }
