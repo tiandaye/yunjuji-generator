@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-13 17:32:55
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-13 18:23:22
+ * @Last Modified time: 2017-09-14 10:35:51
  */
 
 namespace Yunjuji\Generator;
@@ -89,13 +89,18 @@ class YunjujiGeneratorServiceProvider extends ServiceProvider
 		// });
 
     	/**
-         * 引入命令
+         * 引入类
          */
-        
-        $this->app->singleton('yujuji.scaffold', function ($app) {
+        $this->app->singleton('yunjuji.scaffold', function ($app) {
             return new ScaffoldGeneratorCommand();
         });
 
+        /**
+         * 引入命令
+         */
+        $this->commands([
+            'yunjuji.scaffold',
+        ]);
 
 		/**
 		 * infyom
