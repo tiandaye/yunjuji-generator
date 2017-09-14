@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-13 17:32:55
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-14 10:35:51
+ * @Last Modified time: 2017-09-14 10:49:30
  */
 
 namespace Yunjuji\Generator;
@@ -28,7 +28,7 @@ class YunjujiGeneratorServiceProvider extends ServiceProvider
 
         $this->publishes([
             $configPath => config_path('yunjuji/generator.php'),
-        ]);
+        ], 'yunjuji-generator-config');
         // $this->publishes([__DIR__.'/path/to/assets' => public_path('vendor/courier'),], 'public');php artisan vendor:publish --tag=public --force,
         // if ($this->app->runningInConsole()) {}
 
@@ -48,8 +48,6 @@ class YunjujiGeneratorServiceProvider extends ServiceProvider
 
         // 加载多语言
         // $this->loadTranslationsFrom(__DIR__.'/path/to/translations', 'courier');
-
-
 
         /**
          * laravel-admin
@@ -101,102 +99,6 @@ class YunjujiGeneratorServiceProvider extends ServiceProvider
         $this->commands([
             'yunjuji.scaffold',
         ]);
-
-		/**
-		 * infyom
-		 */
- //        $this->app->singleton('infyom.publish', function ($app) {
- //            return new GeneratorPublishCommand();
- //        });
-
- //        $this->app->singleton('infyom.api', function ($app) {
- //            return new APIGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.scaffold', function ($app) {
- //            return new ScaffoldGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.publish.layout', function ($app) {
- //            return new LayoutPublishCommand();
- //        });
-
- //        $this->app->singleton('infyom.publish.templates', function ($app) {
- //            return new PublishTemplateCommand();
- //        });
-
- //        $this->app->singleton('infyom.api_scaffold', function ($app) {
- //            return new APIScaffoldGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.migration', function ($app) {
- //            return new MigrationGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.model', function ($app) {
- //            return new ModelGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.repository', function ($app) {
- //            return new RepositoryGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.api.controller', function ($app) {
- //            return new APIControllerGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.api.requests', function ($app) {
- //            return new APIRequestsGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.api.tests', function ($app) {
- //            return new TestsGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.scaffold.controller', function ($app) {
- //            return new ControllerGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.scaffold.requests', function ($app) {
- //            return new RequestsGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.scaffold.views', function ($app) {
- //            return new ViewsGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.rollback', function ($app) {
- //            return new RollbackGeneratorCommand();
- //        });
-
- //        $this->app->singleton('infyom.vuejs', function ($app) {
- //            return new VueJsGeneratorCommand();
- //        });
- //        $this->app->singleton('infyom.publish.vuejs', function ($app) {
- //            return new VueJsLayoutPublishCommand();
- //        });
-
- //        $this->commands([
- //            'infyom.publish',
- //            'infyom.api',
- //            'infyom.scaffold',
- //            'infyom.api_scaffold',
- //            'infyom.publish.layout',
- //            'infyom.publish.templates',
- //            'infyom.migration',
- //            'infyom.model',
- //            'infyom.repository',
- //            'infyom.api.controller',
- //            'infyom.api.requests',
- //            'infyom.api.tests',
- //            'infyom.scaffold.controller',
- //            'infyom.scaffold.requests',
- //            'infyom.scaffold.views',
- //            'infyom.rollback',
- //            'infyom.vuejs',
- //            'infyom.publish.vuejs',
- //        ]);
-
 
     	/**
     	 * laravel-admin
