@@ -18,8 +18,8 @@
         "laravelcollective/html": "^5.5.0",
         "jlapp/swaggervel": "dev-master",
         "doctrine/dbal": "~2.3",
-        "infyomlabs/laravel-generator": "5.5.x-dev",
-        "infyomlabs/adminlte-templates": "5.5.x-dev",
+        "infyomlabs/laravel-generator": "5.5.*",
+        "infyomlabs/adminlte-templates": "5.5.*",
         "infyomlabs/swagger-generator": "dev-master"
     },
     "require-dev": {
