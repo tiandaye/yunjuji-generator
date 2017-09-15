@@ -11,6 +11,7 @@
             "email": "q408596288@vip.qq.com"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "php": ">=7.0.0",
         "laravel/framework": "5.5.*",
