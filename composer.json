@@ -21,8 +21,6 @@
         "jlapp/swaggervel": "dev-master",
         "doctrine/dbal": "~2.3"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "require-dev": {
         "phpunit/phpunit": "~6.0",
         "laravel/laravel": "5.5.*",
