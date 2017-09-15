@@ -19,8 +19,7 @@
         "jlapp/swaggervel": "dev",
         "doctrine/dbal": "~2.3",
         "infyomlabs/laravel-generator": "5.5.*",
-        "infyomlabs/adminlte-templates": "5.5.*",
-        "infyomlabs/swagger-generator": "dev"
+        "infyomlabs/adminlte-templates": "5.5.*"
     },
     "require-dev": {
         "phpunit/phpunit": "~6.0",
