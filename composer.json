@@ -14,12 +14,12 @@
     "require": {
         "php": ">=7.0.0",
         "laravel/framework": "5.5.*",
-        "infyomlabs/laravel-generator": "5.5.x-dev",
         "laravelcollective/html": "^5.5.0",
-        "infyomlabs/adminlte-templates": "5.5.x-dev",
-        "infyomlabs/swagger-generator": "dev-master",
         "jlapp/swaggervel": "dev-master",
-        "doctrine/dbal": "~2.3"
+        "doctrine/dbal": "~2.3",
+        "infyomlabs/laravel-generator": "5.5.x-dev",
+        "infyomlabs/adminlte-templates": "5.5.x-dev",
+        "infyomlabs/swagger-generator": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "~6.0",
