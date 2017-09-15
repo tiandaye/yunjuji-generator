@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-13 17:32:55
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-14 10:49:30
+ * @Last Modified time: 2017-09-14 12:00:10
  */
 
 namespace Yunjuji\Generator;
@@ -29,7 +29,8 @@ class YunjujiGeneratorServiceProvider extends ServiceProvider
         $this->publishes([
             $configPath => config_path('yunjuji/generator.php'),
         ], 'yunjuji-generator-config');
-        // $this->publishes([__DIR__.'/path/to/assets' => public_path('vendor/courier'),], 'public');php artisan vendor:publish --tag=public --force,
+        // php artisan vendor:publish --tag=yunjuji-generator-config --force,
+
         // if ($this->app->runningInConsole()) {}
 
         /**

@@ -13,7 +13,13 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "laravel/framework": "5.5.*"
+        "laravel/framework": "5.5.*",
+        "infyomlabs/laravel-generator": "5.5.x-dev",
+        "laravelcollective/html": "^5.5.0",
+        "infyomlabs/adminlte-templates": "5.5.x-dev",
+        "infyomlabs/swagger-generator": "dev-master",
+        "jlapp/swaggervel": "dev-master",
+        "doctrine/dbal": "~2.3"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -43,10 +49,18 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Yunjuji\\Generator\\YunjujiGeneratorServiceProvider"
+                "Yunjuji\\Generator\\YunjujiGeneratorServiceProvider",
+                "Collective\\Html\\HtmlServiceProvider::class",
+                "Laracasts\\Flash\\FlashServiceProvider::class",
+                "Prettus\\Repository\\Providers\\RepositoryServiceProvider::class",
+                "\\InfyOm\\Generator\\InfyOmGeneratorServiceProvider::class",
+                "\\InfyOm\\AdminLTETemplates\\AdminLTETemplatesServiceProvider::class", 
             ],
             "aliases": {
-                "YunjujiGenerator": "Yunjuji\\Generator\\Facades\\YunjujiGenerator"
+                "YunjujiGenerator": "Yunjuji\\Generator\\Facades\\YunjujiGenerator",
+                "Form": "Collective\\Html\\FormFacade::class",
+                "Html": "Collective\\Html\\HtmlFacade::class",
+                "Flash": "Laracasts\\Flash\\Flash::class",
             }
 
         }
