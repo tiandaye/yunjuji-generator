@@ -26,6 +26,12 @@ Prettus\Repository\Providers\RepositoryServiceProvider::class,
 'Html'      => Collective\Html\HtmlFacade::class,
 'Flash'     => Laracasts\Flash\Flash::class,
 ```
+- 依次执行 
+```
+php artisan vendor:publish
+php artisan infyom:publish
+php artisan infyom.publish:layout
+```
 ## 安装 `laravel-admin`
 首先确保安装好了 `laravel`，并且数据库连接设置正确。
 ```
@@ -47,11 +53,21 @@ Copied Directory [\vendor\encore\laravel-admin\resources\assets] To [\public\ven
 dor\laravel-admin]
 Publishing complete.
 ```
+建议将 `config/admin.php` 里面的 `database` 部分的表名添加 `laravel_` 前缀. 一共九张表.
 然后运行下面的命令完成安装：
 ```
 php artisan admin:install
 ```
-
+生成的文件：
+```
+Migrating: 2016_01_04_173148_create_admin_tables
+Migrated:  2016_01_04_173148_create_admin_tables
+Admin directory was created: \app\Admin
+HomeController file was created: \app\Admin/Controllers/HomeController.php
+ExampleController file was created: \app\Admin/Controllers/ExampleController.php
+Bootstrap file was created: \app\Admin/bootstrap.php
+Routes file was created: \app\Admin/routes.php
+```
 ## 正式安装 `yunjuji/yunjuji-generator`
 - 开发阶段使用下面命令
 ```
