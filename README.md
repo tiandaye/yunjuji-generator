@@ -139,4 +139,7 @@ composer require yunjuji/yunjuji-generator:dev-dev --prefer-source
 `composer remove yunjuji/yunjuji-generator`
 # 使用
 ## 生成脚手架(cms), 使用下面命令
-`php artisan yunjuji:scaffold posts --fieldsFile=./vendor/yunjuji/yunjuji-generator/samples/fields_sample.json --paginate=20 --datatables=true --formMode=laravel-admin --prefix=v1`
+- 生成 `laravel-admin` 模板, 使用
+`php artisan infyom:scaffold ContentTemplateType --fieldsFile=./vendor/yunjuji/yunjuji-generator/samples/content_template_type.json --datatables=true --formMode=laravel-admin --prefix=Operation`
+- 生成 `datatables` 模板, 使用
+`php artisan yunjuji:scaffold posts --fieldsFile=./vendor/yunjuji/yunjuji-generator/samples/fields_sample.json --paginate=20 --datatables=true --prefix=v1`
