@@ -1,0 +1,2 @@
+$pivotId = $$MODEL_NAME_CAMEL$->$RELATION_NAME$()->wherePivot('$RELATION_FIELD$', '=', $id)->getRelatedIds()->toArray();
+        $$MODEL_NAME_CAMEL$->$RELATION_NAME$()->detach($pivotId);

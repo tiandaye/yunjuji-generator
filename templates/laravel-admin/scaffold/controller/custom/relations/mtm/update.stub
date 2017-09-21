@@ -1,0 +1,1 @@
+$$MODEL_NAME_CAMEL$->$RELATION_NAME$()->sync($request->get('$FIELD_NAME$'));

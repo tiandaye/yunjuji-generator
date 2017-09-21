@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-15 14:17:11
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-15 17:38:09
+ * @Last Modified time: 2017-09-15 20:58:17
  */
 
 namespace Yunjuji\Generator\Console\Commands;
@@ -21,8 +21,8 @@ use InfyOm\Generator\Generators\RepositoryGenerator;
 use InfyOm\Generator\Generators\RepositoryTestGenerator;
 use Yunjuji\Generator\Generators\Scaffold\ControllerGenerator;
 use InfyOm\Generator\Generators\Scaffold\MenuGenerator;
-use InfyOm\Generator\Generators\Scaffold\RequestGenerator;
-use InfyOm\Generator\Generators\Scaffold\RoutesGenerator;
+use Yunjuji\Generator\Generators\Scaffold\RequestGenerator;
+use Yunjuji\Generator\Generators\Scaffold\RoutesGenerator;
 use InfyOm\Generator\Generators\Scaffold\ViewGenerator;
 use InfyOm\Generator\Generators\TestTraitGenerator;
 use InfyOm\Generator\Utils\FileUtil;

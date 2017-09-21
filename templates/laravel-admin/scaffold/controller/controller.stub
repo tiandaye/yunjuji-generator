@@ -2,17 +2,26 @@
 
 namespace $NAMESPACE_CONTROLLER$;
 
-use $NAMESPACE_REQUEST$\Create$MODEL_NAME$Request;
-use $NAMESPACE_REQUEST$\Update$MODEL_NAME$Request;
+use App\Http\Controllers\Controller;
+use $NAMESPACE_REQUEST$\$MODEL_NAME$Request;
+use $NAMESPACE_MODEL$\$MODEL_NAME$;
 use $NAMESPACE_REPOSITORY$\$MODEL_NAME$Repository;
-use $NAMESPACE_APP$\Http\Controllers\AppBaseController;
-use Illuminate\Http\Request;
+use Encore\Admin\Controllers\ModelForm;
+use Encore\Admin\Facades\Admin;
+use Encore\Admin\Form;
+use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Flash;
-use Prettus\Repository\Criteria\RequestCriteria;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Route;
 use Response;
+use DB;
 
-class $MODEL_NAME$Controller extends AppBaseController
+class $MODEL_NAME$Controller extends Controller
 {
+    use ModelForm;
+
     /** @var  $MODEL_NAME$Repository */
     private $$MODEL_NAME_CAMEL$Repository;
 
@@ -24,16 +33,17 @@ class $MODEL_NAME$Controller extends AppBaseController
     /**
      * Display a listing of the $MODEL_NAME$.
      *
-     * @param Request $request
      * @return Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $this->$MODEL_NAME_CAMEL$Repository->pushCriteria(new RequestCriteria($request));
-        $$MODEL_NAME_PLURAL_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->$RENDER_TYPE$;
+        return Admin::content(function (Content $content) {
 
-        return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index')
-            ->with('$MODEL_NAME_PLURAL_CAMEL$', $$MODEL_NAME_PLURAL_CAMEL$);
+            $content->header(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index_header'));
+            $content->description(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index_description'));
+
+            $content->body($this->grid());
+        });
     }
 
     /**
@@ -43,25 +53,33 @@ class $MODEL_NAME$Controller extends AppBaseController
      */
     public function create()
     {
-        return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.create');
+        return Admin::content(function (Content $content) {
+
+            $content->header(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.create_header'));
+            $content->description(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.create_description'));
+
+            $content->body($this->form());
+
+        });
     }
 
     /**
      * Store a newly created $MODEL_NAME$ in storage.
      *
-     * @param Create$MODEL_NAME$Request $request
+     * @param $MODEL_NAME$Request $request
      *
      * @return Response
      */
-    public function store(Create$MODEL_NAME$Request $request)
+    public function store($MODEL_NAME$Request $request)
     {
         $input = $request->all();
 
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->create($input);
 
-        Flash::success('$MODEL_NAME_HUMAN$ saved successfully.');
+        Flash::success(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.saved_success'));
 
-        return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+        return Input::get('_previous_') ? redirect(Input::get('_previous_')) : redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
+
     }
 
     /**
@@ -76,12 +94,13 @@ class $MODEL_NAME$Controller extends AppBaseController
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->findWithoutFail($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
-            Flash::error('$MODEL_NAME_HUMAN$ not found');
+            Flash::error(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.not_found'));
 
-            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
         }
 
-        return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.show')->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
+        return view('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.show')->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
+
     }
 
     /**
@@ -93,40 +112,40 @@ class $MODEL_NAME$Controller extends AppBaseController
      */
     public function edit($id)
     {
-        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->findWithoutFail($id);
+        return Admin::content(function (Content $content) use ($id) {
 
-        if (empty($$MODEL_NAME_CAMEL$)) {
-            Flash::error('$MODEL_NAME_HUMAN$ not found');
+            $content->header(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit_header'));
+            $content->description(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit_description'));
 
-            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
-        }
-
-        return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit')->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
+            $content->body($this->form()->edit($id));
+        });
     }
 
     /**
      * Update the specified $MODEL_NAME$ in storage.
      *
      * @param  int              $id
-     * @param Update$MODEL_NAME$Request $request
+     * @param $MODEL_NAME$Request $request
      *
      * @return Response
      */
-    public function update($id, Update$MODEL_NAME$Request $request)
+    public function update($id, $MODEL_NAME$Request $request)
     {
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->findWithoutFail($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
-            Flash::error('$MODEL_NAME_HUMAN$ not found');
+            Flash::error(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.not_found'));
 
-            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
         }
 
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->update($request->all(), $id);
+        $MODEL_M2M_RELATIONS_UPDATE$
 
-        Flash::success('$MODEL_NAME_HUMAN$ updated successfully.');
 
-        return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+        Flash::success(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.updated_success'));
+
+        return Input::get('_previous_') ? redirect(Input::get('_previous_')) : redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
     }
 
     /**
@@ -138,18 +157,141 @@ class $MODEL_NAME$Controller extends AppBaseController
      */
     public function destroy($id)
     {
+        // 根据 `,` 判断传递过来的是单个id还是多个id
+        if (substr_count($id, ',') >= 1) {
+            $id = explode(",", $id);
+        }
+
+        // 如果是数组则进行批量删除
+        if (is_array($id)) {
+            if ($flag = $this->$MODEL_NAME_CAMEL$Repository->batchDelete('id', $id)) {
+                return response()->json(['message' => __('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.deleted_success'), 'status' => $flag]);
+            } else {
+                return response()->json(['message' => __('base.deleted.error'), 'status' => $flag]);
+            }
+        }
+
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->findWithoutFail($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
-            Flash::error('$MODEL_NAME_HUMAN$ not found');
+            Flash::error(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.not_found'));
 
-            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
         }
 
-        $this->$MODEL_NAME_CAMEL$Repository->delete($id);
+        if ($flag = $this->$MODEL_NAME_CAMEL$Repository->delete($id)) {
+        $MODEL_M2M_RELATIONS_DESTORY$
+            return response()->json(['message' => __('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.deleted_success'), 'status' => $flag]);
+        } else {
+            return response()->json(['message' => __('base.deleted.error'), 'status' => $flag]);
+        }
+    }
 
-        Flash::success('$MODEL_NAME_HUMAN$ deleted successfully.');
+    /**
+     * [form description]
+     * @return {[type]} [description]
+     */
+    protected function form()
+    {
+        return Admin::form($MODEL_NAME$::class, function (Form $form) {
 
-        return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+            $form->display('id', 'ID');
+$LARAVELADMIN_FIELD_LIST$
+
+            $form->display('created_at', __('base.created_at'));
+            $form->display('updated_at', __('base.updated_at'));
+
+        });
+    }
+
+    /**
+     * [grid description]
+     * @return {[type]} [description]
+     */
+    protected function grid()
+    {
+
+        return Admin::grid($MODEL_NAME$::class, function (Grid $grid) {
+            // 考虑是否需要scope和排序
+            // $grid->model()->orderBy('listorder', 'asc');
+
+            // // 添加按钮
+            // if (!\Gate::check('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.create')) {
+            //     $grid->disableCreation();
+            // }
+
+            // // 编辑和删除按钮
+            // $grid->actions(function ($actions) {
+            //     // 编辑按钮
+            //     if (!\Gate::check('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit')) {
+            //         $actions->disableEdit();
+            //     }
+            //     // 删除按钮
+            //     if (!\Gate::check('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.destroy')) {
+            //         $actions->disableDelete();
+            //     }
+            // });
+
+            // // 导出按钮
+            // if (!\Gate::check('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.export')) {
+            //     $grid->disableExport();
+            // }
+
+            // // 批量操作
+            // $grid->tools(function ($tools) {
+            //     $tools->batch(function ($batch) {
+            //         // 批量删除按钮
+            //         if (!\Gate::check('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.batch_destroy')) {
+            //             $batch->disableDelete();
+            //         }
+            //     });
+            // });
+
+            // 添加按钮
+            if (Admin::user()->cannot('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.create')) {
+                $grid->disableCreation();
+            }
+
+            // 编辑和删除按钮
+            $grid->actions(function ($actions) {
+                // 编辑按钮
+                if (Admin::user()->cannot('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit')) {
+                    $actions->disableEdit();
+                }
+                // 删除按钮
+                if (Admin::user()->cannot('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.destroy')) {
+                    $actions->disableDelete();
+                }
+            });
+
+            // 导出按钮
+            if (Admin::user()->cannot('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.export')) {
+                $grid->disableExport();
+            }
+
+            // 批量操作
+            $grid->tools(function ($tools) {
+                $tools->batch(function ($batch) {
+                    // 批量删除按钮
+                    if (Admin::user()->cannot('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.batch_destroy')) {
+                        $batch->disableDelete();
+                    }
+                });
+            });
+
+            $LARAVELADMIN_COLUMN_LIST$
+            
+            /**
+             * 过滤处理
+             */
+            // $grid->filter(function ($filter) {
+                // // 禁用id查询框
+                // $filter->disableIdFilter();
+                // // 名称
+                // $filter->like('name', '内容模板类型名称');
+                // // 模板别名
+                // $filter->like('alias', '模板类型别名');
+            // });
+        });
     }
 }

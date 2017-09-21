@@ -1,0 +1,5 @@
+		$$TEMP_FIELD_OPTIONS$ = DB::table('$TABLE_NAME$')->select(['$KEY$', '$VALUE$'])->get()->toArray();
+		$$FIELD_OPTIONS$ = array();
+		foreach($$TEMP_FIELD_OPTIONS$ as $$TEMP_FIELD_OPTION$){
+			$$FIELD_OPTIONS$[$$TEMP_FIELD_OPTION$->$KEY$] = $$TEMP_FIELD_OPTION$->$VALUE$;
+		}
