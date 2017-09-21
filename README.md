@@ -33,6 +33,7 @@ php artisan infyom:publish
 php artisan infyom.publish:layout
 ```
 ## 引入自定义路由
+- 在 `app/routes` 目录下面新建 `web` 文件夹 
 - 在 `app/Providers/RouteServiceProvider.php` 的 `map()` 函数中加入
 ```
 // tian add `mapCustomRoutes`

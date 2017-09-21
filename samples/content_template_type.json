@@ -1,0 +1,33 @@
+[    
+    {
+        "label": "内容模板类型名称",
+        "title": "内容模板类型名称",
+        "name": "name",
+        "dbType": "string",
+        "validations": "required|max:100",
+        "htmlType": "text"
+    },
+    {
+        "label": "内容模板类型别名",
+        "title": "内容模板类型别名",
+        "name": "alias",
+        "dbType": "string",
+        "validations": "required|max:100",
+        "htmlType": "text"
+    },
+    {
+        "label": "描述",
+        "title": "别名",
+        "name": "description",
+        "dbType": "string",
+        "htmlType": "textarea"
+    },
+    {
+        "label": "排序",
+        "title": "排序",
+        "name": "listorder",
+        "dbType": "integer",
+        "validations": "required",
+        "htmlType": "number"
+    }
+]
