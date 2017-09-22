@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use Response;
-use DB;
+$USE_NAMESPACE_MODEL_LIST$
 
 class $MODEL_NAME$Controller extends Controller
 {
@@ -197,7 +197,6 @@ class $MODEL_NAME$Controller extends Controller
 
             $form->display('id', 'ID');
 $LARAVELADMIN_FIELD_LIST$
-
             $form->display('created_at', __('base.created_at'));
             $form->display('updated_at', __('base.updated_at'));
 
@@ -279,19 +278,15 @@ $LARAVELADMIN_FIELD_LIST$
                 });
             });
 
-            $LARAVELADMIN_COLUMN_LIST$
-            
+$LARAVELADMIN_COLUMN_LIST$
             /**
              * 过滤处理
              */
-            // $grid->filter(function ($filter) {
+            $grid->filter(function ($filter) {
                 // // 禁用id查询框
                 // $filter->disableIdFilter();
-                // // 名称
-                // $filter->like('name', '内容模板类型名称');
-                // // 模板别名
-                // $filter->like('alias', '模板类型别名');
-            // });
+$LARAVELADMIN_FILTER_FIELD_LIST$
+            });
         });
     }
 }

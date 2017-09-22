@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-13 17:28:00
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-15 18:09:02
+ * @Last Modified time: 2017-09-21 18:17:47
  */
 
 if (!function_exists('yunjuji_tab')) {
@@ -76,7 +76,7 @@ if (!function_exists('yunjuji_nl_tab')) {
      */
     function yunjuji_nl_tab($lns = 1, $tabs = 1)
     {
-        return infy_nls($lns).infy_tabs($tabs);
+        return infy_nls($lns) . infy_tabs($tabs);
     }
 }
 
@@ -98,13 +98,13 @@ if (!function_exists('yunjuji_get_template_file_path')) {
             base_path('resources/yunjuji/yunjuji-generator-templates/')
         );
 
-        $path = $templatesPath.$templateName.'.stub';
+        $path = $templatesPath . $templateName . '.stub';
 
         if (file_exists($path)) {
             return $path;
         }
 
-        return base_path('vendor/yunjuji/'.$templateType.'/templates/'.$templateName.'.stub');
+        return base_path('vendor/yunjuji/' . $templateType . '/templates/' . $templateName . '.stub');
     }
 }
 

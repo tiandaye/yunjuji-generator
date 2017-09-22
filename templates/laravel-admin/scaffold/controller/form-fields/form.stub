@@ -1,1 +1,1 @@
-            $form->$FORMOPTIONS$;
+            $form->$LARAVEL_ADMIN_FORM_OPTIONS$;

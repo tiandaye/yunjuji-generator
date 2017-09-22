@@ -1,12 +1,11 @@
 <?php
 
-namespace InfyOm\Generator\Generators\Scaffold;
+namespace Yunjuji\Generator\Generators\Scaffold;
 
 use Illuminate\Support\Str;
 use InfyOm\Generator\Common\CommandData;
 use InfyOm\Generator\Generators\BaseGenerator;
 use InfyOm\Generator\Utils\FileUtil;
-use InfyOm\Generator\Utils\GeneratorFieldsInputUtil;
 use InfyOm\Generator\Utils\HTMLFieldGenerator;
 
 class ViewGenerator extends BaseGenerator
@@ -25,8 +24,8 @@ class ViewGenerator extends BaseGenerator
 
     public function __construct(CommandData $commandData)
     {
-        $this->commandData = $commandData;
-        $this->path = $commandData->config->pathViews;
+        $this->commandData  = $commandData;
+        $this->path         = $commandData->config->pathViews;
         $this->templateType = config('infyom.laravel_generator.templates', 'core-templates');
     }
 
@@ -353,7 +352,7 @@ class ViewGenerator extends BaseGenerator
             $singleFieldStr = str_replace('$FIELD_NAME$', $field->name, $singleFieldStr);
             $singleFieldStr = fill_template($this->commandData->dynamicVars, $singleFieldStr);
 
-            $fieldsStr .= $singleFieldStr."\n\n";
+            $fieldsStr .= $singleFieldStr . "\n\n";
         }
 
         FileUtil::createFile($this->path, 'show_fields.blade.php', $fieldsStr);
@@ -388,7 +387,7 @@ class ViewGenerator extends BaseGenerator
 
         foreach ($files as $file) {
             if ($this->rollbackFile($this->path, $file)) {
-                $this->commandData->commandComment($file.' file deleted');
+                $this->commandData->commandComment($file . ' file deleted');
             }
         }
     }

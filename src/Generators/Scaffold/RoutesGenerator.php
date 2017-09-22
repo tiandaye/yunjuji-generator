@@ -45,7 +45,7 @@ class RoutesGenerator
     public function __construct(CommandData $commandData)
     {
         /**
-         * tian comment
+         * tian comment start
          */
         // $this->commandData = $commandData;
         // $this->path = $commandData->config->pathRoutes;
@@ -56,16 +56,19 @@ class RoutesGenerator
         //     $this->routesTemplate = get_template('scaffold.routes.routes', 'laravel-generator');
         // }
         // $this->routesTemplate = fill_template($this->commandData->dynamicVars, $this->routesTemplate);
+        /**
+         * tian comment end
+         */
 
         /**
          * tian add start
          */
-        $this->commandData = $commandData;
-        $this->path = $commandData->config->pathRoutes;
-        $this->routeContents = file_get_contents($this->path);
+        $this->commandData      = $commandData;
+        $this->path             = $commandData->config->pathRoutes;
+        $this->routeContents    = file_get_contents($this->path);
         $this->baseTemplateType = config('yunjuji.generator.templates.base', 'yunjuji-generator');
         if ($this->commandData->getOption('formMode')) {
-            $this->formMode = $this->commandData->getOption('formMode');
+            $this->formMode       = $this->commandData->getOption('formMode');
             $this->formModePrefix = $this->formMode . '.';
         }
         if (!empty($this->commandData->config->prefixes['route'])) {
@@ -84,24 +87,29 @@ class RoutesGenerator
      * @return [type] [description]
      */
     public function generate()
-    {   
+    {
         /**
          * tian add start
          */
         // 【在web目录下创建相应的路由文件】
-        $routePath = dirname($this->path);
-        $this->routeContents = "<?php\n\n".$this->routesTemplate;
+        $routePath           = dirname($this->path);
+        $this->routeContents = "<?php\n\n" . $this->routesTemplate;
         // mNam是全大写, mSnakePlural蛇形有s
         FileUtil::createFile($routePath . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . $this->commandData->config->prefixes['route'] . DIRECTORY_SEPARATOR, $this->commandData->config->mSnakePlural . '.php', $this->routeContents);
         /**
          * tian add end
          */
 
-        // tian comment
+        /**
+         * tian comment start
+         */
         // $this->routeContents .= "\n\n".$this->routesTemplate;
 
         // file_put_contents($this->path, $this->routeContents);
         // $this->commandData->commandComment("\n".$this->commandData->config->mCamelPlural.' routes added.');
+        /**
+         * tian comment end
+         */
     }
 
     /**
@@ -137,7 +145,7 @@ class RoutesGenerator
      */
     public function rollbackFile($path, $fileName)
     {
-        if (file_exists($path.$fileName)) {
+        if (file_exists($path . $fileName)) {
             return FileUtil::deleteFile($path, $fileName);
         }
 

@@ -1,0 +1,21 @@
+[{
+    "label": "内容模板类型名称",
+    "name": "name",
+    "operator": "like",
+    "htmlType": ""
+}, {
+    "label": "内容模板类型别名",
+    "name": "alias",
+    "operator": "equal",
+    "htmlType": ""
+}, {
+    "label": "模板类型",
+    "name": "content_template_type_id",
+    "operator": "in",
+    "htmlType": "select"
+}, {
+    "label": "创建时间",
+    "name": "created_at",
+    "operator": "between",
+    "htmlType": "datetime"
+}]

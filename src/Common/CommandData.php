@@ -4,16 +4,16 @@ namespace Yunjuji\Generator\Common;
 
 use Exception;
 use Illuminate\Console\Command;
+use InfyOm\Generator\Common\CommandData as LaravelGeneratorCommandData;
 use InfyOm\Generator\Utils\GeneratorFieldsInputUtil;
 use InfyOm\Generator\Utils\TableFieldsGenerator;
-use InfyOm\Generator\Common\CommandData as LaravelGeneratorCommandData;
 
 class CommandData extends LaravelGeneratorCommandData
 {
-    public static $COMMAND_TYPE_API = 'api';
-    public static $COMMAND_TYPE_SCAFFOLD = 'scaffold';
+    public static $COMMAND_TYPE_API          = 'api';
+    public static $COMMAND_TYPE_SCAFFOLD     = 'scaffold';
     public static $COMMAND_TYPE_API_SCAFFOLD = 'api_scaffold';
-    public static $COMMAND_TYPE_VUEJS = 'vuejs';
+    public static $COMMAND_TYPE_VUEJS        = 'vuejs';
 
     /** @var string */
     public $modelName;
@@ -32,7 +32,7 @@ class CommandData extends LaravelGeneratorCommandData
     public $commandObj;
 
     /** @var array */
-    public $dynamicVars = [];
+    public $dynamicVars       = [];
     public $fieldNamesMapping = [];
 
     /** @var CommandData */
@@ -41,6 +41,8 @@ class CommandData extends LaravelGeneratorCommandData
     /**
      * tian add start
      */
+    // 各个模型的命名空间 @var $namespaceModelMapping[]
+    public $namespaceModelMapping = [];
     // 保存有关联关系的字段 @var $hasRelationFields[]
     public $hasRelationFields = [];
     // 过滤字段 @var $filterFields[]
@@ -73,9 +75,9 @@ class CommandData extends LaravelGeneratorCommandData
      * @return CommandData
      */
     public function __construct(Command $commandObj, $commandType)
-    {   
+    {
         // 命令对象和命令类型
-        $this->commandObj = $commandObj;
+        $this->commandObj  = $commandObj;
         $this->commandType = $commandType;
 
         // 字段名映射
@@ -91,11 +93,11 @@ class CommandData extends LaravelGeneratorCommandData
         // 过滤字段名映射
         $this->filterFieldNamesMapping = [
             // 过滤字段中的模板替换直接复用了字段中的模板替换, 因为过滤字段中没有data属性, 所以需要覆盖下
-            '$FIELD_DATA$'       => 'name',
+            '$FIELD_DATA$' => 'name',
             // '$FIELD_NAME_TITLE$' => 'fieldTitle',
             // '$FIELD_NAME$'       => 'name',
             // '$TABLE_NAME$'       => 'table_name',
-            '$OPERATOR$'         => 'operator'
+            '$OPERATOR$'   => 'operator',
         ];
         /**
          * tian add end
@@ -214,31 +216,6 @@ class CommandData extends LaravelGeneratorCommandData
     }
 
     /**
-     * tian custom function
-     * [getFilterFields 【获得过滤字段】]
-     * @return [type] [description]
-     */
-    public function getFilterFields()
-    {
-        $this->filterFields = [];
-
-        if ($this->getOption('filterFieldsFile')) {
-            $this->getInputFilterFromFileOrJson();
-        }
-       // if ($this->getOption('fieldsFile') or $this->getOption('jsonFromGUI')) {
-       //     //【获得输入表单文件或者json】
-       //     $this->getInputFromFileOrJson();
-
-       // } elseif ($this->getOption('fromTable')) {
-       //     //【获得输入表单表格】
-       //     $this->getInputFromTable();
-       // } else {
-       //     //【获得输入表单控制台】
-       //     $this->getInputFromConsole();
-       // }
-    }
-
-    /**
      * [getInputFromConsole 【获得输入form控制台的字段】]
      * @return [type] [description]
      */
@@ -306,13 +283,13 @@ class CommandData extends LaravelGeneratorCommandData
      */
     private function addTimestamps()
     {
-        $createdAt = new GeneratorField();
+        $createdAt       = new GeneratorField();
         $createdAt->name = 'created_at';
         $createdAt->parseDBType('timestamp');
         $createdAt->parseOptions('s,f,if,ii');
         $this->fields[] = $createdAt;
 
-        $updatedAt = new GeneratorField();
+        $updatedAt       = new GeneratorField();
         $updatedAt->name = 'updated_at';
         $updatedAt->parseDBType('timestamp');
         $updatedAt->parseOptions('s,f,if,ii');
@@ -335,7 +312,7 @@ class CommandData extends LaravelGeneratorCommandData
                     $filePath = base_path($fieldsFileValue);
                 } else {
                     $schemaFileDirector = config('infyom.laravel_generator.path.schema_files');
-                    $filePath = $schemaFileDirector.$fieldsFileValue;
+                    $filePath           = $schemaFileDirector . $fieldsFileValue;
                 }
 
                 if (!file_exists($filePath)) {
@@ -344,13 +321,18 @@ class CommandData extends LaravelGeneratorCommandData
                 }
 
                 $fileContents = file_get_contents($filePath);
-                $jsonData = json_decode($fileContents, true);
+                $jsonData     = json_decode($fileContents, true);
                 $this->fields = [];
                 foreach ($jsonData as $field) {
                     if (isset($field['type']) && $field['relation']) {
-                        // tian comment
+                        /**
+                         * tian comment start
+                         */
                         // $this->relations[] = GeneratorFieldRelation::parseRelation($field['relation']);
-                        
+                        /**
+                         * tian comment end
+                         */
+
                         /**
                          * tian add
                          */
@@ -361,49 +343,49 @@ class CommandData extends LaravelGeneratorCommandData
                             $field['name'] = $tempInputs[1];
                             // 只是为了防止报错才加这行【因为我现在是试图将一个关系当做一个字段】
                             $field['dbType'] = 'integer';
-                            $tempField = GeneratorField::parseFieldFromFile($field);
+                            $tempField       = GeneratorField::parseFieldFromFile($field);
                             // 添加到有m2m关联关系的字段数组里面
                             $this->hasM2mRelationFields[] = $tempField;
-                            $tempRelation = GeneratorFieldRelation::parseRelation($field['relation']);
-                            $this->relations[] = $tempRelation;
+                            $tempRelation                 = GeneratorFieldRelation::parseRelation($field['relation']);
+                            $this->relations[]            = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array( 'name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) -1 );
-                        } else if ($tempInputs[0] == 'hmt'){
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
+                        } else if ($tempInputs[0] == 'hmt') {
                             // 用中间表表名当字段名
                             $field['name'] = $tempInputs[1];
                             // 只是为了防止报错才加这行【因为我现在是试图将一个关系当做一个字段】
                             $field['dbType'] = 'integer';
-                            $tempField = GeneratorField::parseFieldFromFile($field);
+                            $tempField       = GeneratorField::parseFieldFromFile($field);
                             // 添加到有hmt远层一对多关联关系的字段数组里面
                             $this->hasHmtRelationFields[] = $tempField;
-                            $tempRelation = GeneratorFieldRelation::parseRelation($field['relation']);
-                            $this->relations[] = $tempRelation;
+                            $tempRelation                 = GeneratorFieldRelation::parseRelation($field['relation']);
+                            $this->relations[]            = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array( 'name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) -1 );
-                        } else if ($tempInputs[0] == 'mhm'){
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
+                        } else if ($tempInputs[0] == 'mhm') {
                             // 用中间表表名当字段名
                             $field['name'] = $tempInputs[1];
                             // 只是为了防止报错才加这行【因为我现在是试图将一个关系当做一个字段】
                             $field['dbType'] = 'integer';
-                            $tempField = GeneratorField::parseFieldFromFile($field);
+                            $tempField       = GeneratorField::parseFieldFromFile($field);
                             // 添加到有mhm多态morphMany关联关系的字段数组里面
                             $this->hasMhmRelationFields[] = $tempField;
-                            $tempRelation = GeneratorFieldRelation::parseRelation($field['relation']);
-                            $this->relations[] = $tempRelation;
+                            $tempRelation                 = GeneratorFieldRelation::parseRelation($field['relation']);
+                            $this->relations[]            = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array( 'name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) -1 );
-                        } else if ($tempInputs[0] == 'mhtm'){
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
+                        } else if ($tempInputs[0] == 'mhtm') {
                             // 用中间表表名当字段名
                             $field['name'] = $tempInputs[1];
                             // 只是为了防止报错才加这行【因为我现在是试图将一个关系当做一个字段】
                             $field['dbType'] = 'integer';
-                            $tempField = GeneratorField::parseFieldFromFile($field);
+                            $tempField       = GeneratorField::parseFieldFromFile($field);
                             // 添加到有mhtm多态多对多关联morphToMany关联关系的字段数组里面
                             $this->hasMhtmRelationFields[] = $tempField;
-                            $tempRelation = GeneratorFieldRelation::parseRelation($field['relation']);
-                            $this->relations[] = $tempRelation;
+                            $tempRelation                  = GeneratorFieldRelation::parseRelation($field['relation']);
+                            $this->relations[]             = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array( 'name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) -1 );
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
                         } else {
                             $this->relations[] = GeneratorFieldRelation::parseRelation($field['relation']);
                         }
@@ -411,22 +393,27 @@ class CommandData extends LaravelGeneratorCommandData
                          * tian end
                          */
                     } else {
-                        // tian comment
+                        /**
+                         * tian comment start
+                         */
                         // $this->fields[] = GeneratorField::parseFieldFromFile($field);
                         // if (isset($field['relation'])) {
                         //     $this->relations[] = GeneratorFieldRelation::parseRelation($field['relation']);
                         // }
-                        
+                        /**
+                         * tian comment end
+                         */
+
                         /**
                          * tian start
                          */
-                        $tempField = GeneratorField::parseFieldFromFile($field);
+                        $tempField      = GeneratorField::parseFieldFromFile($field);
                         $this->fields[] = $tempField;
                         if (isset($field['relation'])) {
-                            $tempRelation = GeneratorFieldRelation::parseRelation($field['relation']);
+                            $tempRelation      = GeneratorFieldRelation::parseRelation($field['relation']);
                             $this->relations[] = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array( 'name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) -1 );
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
                         }
                         /**
                          * tian end
@@ -435,7 +422,7 @@ class CommandData extends LaravelGeneratorCommandData
                 }
             } else {
                 $fileContents = $this->getOption('jsonFromGUI');
-                $jsonData = json_decode($fileContents, true);
+                $jsonData     = json_decode($fileContents, true);
                 foreach ($jsonData['fields'] as $field) {
                     if (isset($field['type']) && $field['relation']) {
                         $this->relations[] = GeneratorFieldRelation::parseRelation($field['relation']);
@@ -446,53 +433,6 @@ class CommandData extends LaravelGeneratorCommandData
                         }
                     }
                 }
-            }
-        } catch (Exception $e) {
-            $this->commandError($e->getMessage());
-            exit;
-        }
-    }
-
-    /**
-     * tian custom function
-     * [getInputFilterFromFileOrJson 【获得过滤字段列表】]
-     * @return [type] [description]
-     */
-    private function getInputFilterFromFileOrJson()
-    {
-        // fieldsFile option will get high priority than json option if both options are passed
-        try {
-            if ($this->getOption('filterFieldsFile')) {
-                //文件名，用户传入的选项
-                $fieldsFileValue = $this->getOption('filterFieldsFile');
-                if (file_exists($fieldsFileValue)) {
-                    $filePath = $fieldsFileValue;
-                } elseif (file_exists(base_path($fieldsFileValue))) {
-                    $filePath = base_path($fieldsFileValue);
-                } else {
-                    $schemaFileDirector = config('infyom.laravel_generator.path.schema_files');
-                    $filePath = $schemaFileDirector.$fieldsFileValue;
-                }
-
-                if (!file_exists($filePath)) {
-                    $this->commandError('Fields file not found');
-                    exit;
-                }
-
-                $fileContents = file_get_contents($filePath);
-                $jsonData = json_decode($fileContents, true);
-                $this->filterFields = [];
-
-                foreach ($jsonData as $field) {
-                    //调用自定义的函数, 构建过滤字段
-                    $this->filterFields[] = GeneratorFilterField::parseFieldFromFile($field);
-                }
-
-                /**
-                 * 控制是否显示过滤区域的
-                 */
-                $this->addDynamicVariable('$FILTER_AREA_DISPLAY$', 'true');
-            } else {
             }
         } catch (Exception $e) {
             $this->commandError($e->getMessage());
@@ -512,7 +452,125 @@ class CommandData extends LaravelGeneratorCommandData
         $tableFieldsGenerator->prepareFieldsFromTable();
         $tableFieldsGenerator->prepareRelations();
 
-        $this->fields = $tableFieldsGenerator->fields;
+        $this->fields    = $tableFieldsGenerator->fields;
         $this->relations = $tableFieldsGenerator->relations;
+    }
+
+    /**
+     * tian custom function
+     * [getFilterFields 【获得过滤字段】]
+     * @return [type] [description]
+     */
+    public function getFilterFields()
+    {
+        $this->filterFields = [];
+
+        if ($this->getOption('filterFieldsFile')) {
+            $this->getInputFilterFromFileOrJson();
+        }
+        // if ($this->getOption('fieldsFile') or $this->getOption('jsonFromGUI')) {
+        //     //【获得输入表单文件或者json】
+        //     $this->getInputFromFileOrJson();
+
+        // } elseif ($this->getOption('fromTable')) {
+        //     //【获得输入表单表格】
+        //     $this->getInputFromTable();
+        // } else {
+        //     //【获得输入表单控制台】
+        //     $this->getInputFromConsole();
+        // }
+    }
+
+    /**
+     * tian custom function
+     * [getNamespaceModelMapping 【获得过滤字段】]
+     * @return [type] [description]
+     */
+    public function getNamespaceModelMapping()
+    {
+        $this->namespaceModelMapping = [];
+
+        if ($this->getOption('namespaceModelMappingFile')) {
+            $this->getNamespaceModelMappingFromFileOrJson();
+        }
+    }
+
+    /**
+     * tian custom function
+     * [getInputFilterFromFileOrJson 【获得过滤字段列表】]
+     * @return [type] [description]
+     */
+    private function getInputFilterFromFileOrJson()
+    {
+        // fieldsFile option will get high priority than json option if both options are passed
+        try {
+            if ($this->getOption('filterFieldsFile')) {
+                // 文件名, 用户传入的选项
+                $fieldsFileValue = $this->getOption('filterFieldsFile');
+                if (file_exists($fieldsFileValue)) {
+                    $filePath = $fieldsFileValue;
+                } elseif (file_exists(base_path($fieldsFileValue))) {
+                    $filePath = base_path($fieldsFileValue);
+                } else {
+                    $schemaFileDirector = config('infyom.laravel_generator.path.schema_files');
+                    $filePath           = $schemaFileDirector . $fieldsFileValue;
+                }
+
+                if (!file_exists($filePath)) {
+                    $this->commandError('filter Fields file not found');
+                    exit;
+                }
+
+                $fileContents       = file_get_contents($filePath);
+                $jsonData           = json_decode($fileContents, true);
+                $this->filterFields = [];
+
+                foreach ($jsonData as $filterField) {
+                    // 调用自定义的函数, 构建过滤字段
+                    $this->filterFields[] = GeneratorFilterField::parseFilterFieldFile($filterField);
+                }
+            } else {
+            }
+        } catch (Exception $e) {
+            $this->commandError($e->getMessage());
+            exit;
+        }
+    }
+
+    /**
+     * tian custom function
+     * [getNamespaceModelMappingFromFileOrJson 【获得模型映射关系】]
+     * @return [type] [description]
+     */
+    private function getNamespaceModelMappingFromFileOrJson()
+    {
+        // fieldsFile option will get high priority than json option if both options are passed
+        try {
+            if ($this->getOption('namespaceModelMappingFile')) {
+                //文件名，用户传入的选项
+                $namespaceModelMappingFile = $this->getOption('namespaceModelMappingFile');
+                if (file_exists($namespaceModelMappingFile)) {
+                    $filePath = $namespaceModelMappingFile;
+                } else if (file_exists(base_path($namespaceModelMappingFile))) {
+                    $filePath = base_path($namespaceModelMappingFile);
+                } else {
+                    $schemaFileDirector = config('infyom.laravel_generator.path.schema_files');
+                    $filePath           = $schemaFileDirector . $namespaceModelMappingFile;
+                }
+
+                if (!file_exists($filePath)) {
+                    $this->commandError('namespaceModelMappingFile Fields file not found');
+                    exit;
+                }
+
+                $fileContents                = file_get_contents($filePath);
+                $jsonData                    = json_decode($fileContents, true);
+                $this->namespaceModelMapping = $jsonData;
+            } else {
+            }
+        } catch (Exception $e) {
+            $this->commandError($e->getMessage());
+            exit;
+        }
     }
 }

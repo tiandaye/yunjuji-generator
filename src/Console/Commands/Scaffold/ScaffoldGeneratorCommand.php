@@ -4,13 +4,13 @@
  * @Author: admin
  * @Date:   2017-09-13 17:51:43
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-15 17:33:06
+ * @Last Modified time: 2017-09-21 18:17:00
  */
 
 namespace Yunjuji\Generator\Console\Commands\Scaffold;
 
-use Yunjuji\Generator\Console\Commands\BaseCommand;
 use Yunjuji\Generator\Common\CommandData;
+use Yunjuji\Generator\Console\Commands\BaseCommand;
 
 class ScaffoldGeneratorCommand extends BaseCommand
 {

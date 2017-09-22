@@ -2,9 +2,9 @@
 
 namespace $NAMESPACE_REQUEST$;
 
-use App\Http\Requests\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
-class $MODEL_NAME$Request extends Request
+class $MODEL_NAME$Request extends FormRequest
 {
 
     /**
@@ -35,16 +35,16 @@ class $MODEL_NAME$Request extends Request
             case 'POST':
             {
                 return [
-                    $RULES$
+        $CREATE_RULES$
                 ];
             }
             // UPDATE
             case 'PUT':
             case 'PATCH':
             {
-                // $id = $this->route('$MODEL_NAME_PLURAL_SNAKE$');
+                $id = $this->route('$MODEL_NAME_PLURAL_SNAKE$');
                 return [
-                    $RULES$
+        $UPDATE_RULES$
                 ];
             }
             default:

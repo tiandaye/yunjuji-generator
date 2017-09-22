@@ -4,30 +4,28 @@
  * @Author: admin
  * @Date:   2017-09-15 14:17:11
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-15 20:58:17
+ * @Last Modified time: 2017-09-22 15:19:05
  */
 
 namespace Yunjuji\Generator\Console\Commands;
 
 use InfyOm\Generator\Commands\BaseCommand as LaravelGeneratorBaseCommand;
-use Yunjuji\Generator\Common\CommandData;
 use InfyOm\Generator\Generators\API\APIControllerGenerator;
 use InfyOm\Generator\Generators\API\APIRequestGenerator;
 use InfyOm\Generator\Generators\API\APIRoutesGenerator;
 use InfyOm\Generator\Generators\API\APITestGenerator;
 use InfyOm\Generator\Generators\MigrationGenerator;
-use InfyOm\Generator\Generators\ModelGenerator;
 use InfyOm\Generator\Generators\RepositoryGenerator;
 use InfyOm\Generator\Generators\RepositoryTestGenerator;
-use Yunjuji\Generator\Generators\Scaffold\ControllerGenerator;
-use InfyOm\Generator\Generators\Scaffold\MenuGenerator;
-use Yunjuji\Generator\Generators\Scaffold\RequestGenerator;
-use Yunjuji\Generator\Generators\Scaffold\RoutesGenerator;
-use InfyOm\Generator\Generators\Scaffold\ViewGenerator;
 use InfyOm\Generator\Generators\TestTraitGenerator;
 use InfyOm\Generator\Utils\FileUtil;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Yunjuji\Generator\Common\CommandData;
+use Yunjuji\Generator\Generators\Scaffold\ControllerGenerator;
+use Yunjuji\Generator\Generators\Scaffold\RequestGenerator;
+use Yunjuji\Generator\Generators\Scaffold\RoutesGenerator;
+use Yunjuji\Generator\Generators\ModelGenerator;
 
 class BaseCommand extends LaravelGeneratorBaseCommand
 {
@@ -56,21 +54,33 @@ class BaseCommand extends LaravelGeneratorBaseCommand
 
     public function handle()
     {
-    	parent::handle();
+        // parent::handle();
         $this->commandData->modelName = $this->argument('model');
-        // // 初始化通用数据【最后是调用GeneratorConfig里面的init】
+        // 初始化通用数据【最后是调用GeneratorConfig里面的init】
         $this->commandData->initCommandData();
-        // // 获得字段的函数
+        // 获得字段的函数
         $this->commandData->getFields();
+        // dd(get_class($this->commandData));
+
+        /**
+         * tian add start
+         */
+        // 获得 `过滤字段` 的函数
+        $this->commandData->getFilterFields();
+        // 获得 `模型命名空间映射`
+        $this->commandData->getNamespaceModelMapping();
+        /**
+         * tian add end
+         */
     }
 
-	/**
+    /**
      * [generateCommonItems 【产生通用选项】]
      * @return [type] [description]
      */
     public function generateCommonItems()
-    {	
-    	// fromTable和migration
+    {
+        // fromTable和migration
         if (!$this->commandData->getOption('fromTable') and !$this->isSkip('migration')) {
             $migrationGenerator = new MigrationGenerator($this->commandData);
             $migrationGenerator->generate();
@@ -94,8 +104,8 @@ class BaseCommand extends LaravelGeneratorBaseCommand
      * @return [type] [description]
      */
     public function generateAPIItems()
-    {	
-    	// 请求
+    {
+        // 请求
         if (!$this->isSkip('requests') and !$this->isSkip('api_requests')) {
             $requestGenerator = new APIRequestGenerator($this->commandData);
             $requestGenerator->generate();
@@ -132,7 +142,7 @@ class BaseCommand extends LaravelGeneratorBaseCommand
      */
     public function generateScaffoldItems()
     {
-    	// 请求
+        // 请求
         if (!$this->isSkip('requests') and !$this->isSkip('scaffold_requests')) {
             $requestGenerator = new RequestGenerator($this->commandData);
             $requestGenerator->generate();
@@ -231,15 +241,15 @@ class BaseCommand extends LaravelGeneratorBaseCommand
         foreach ($this->commandData->relations as $relation) {
             $fileFields[] = [
                 'type'     => 'relation',
-                'relation' => $relation->type.','.implode(',', $relation->inputs),
+                'relation' => $relation->type . ',' . implode(',', $relation->inputs),
             ];
         }
 
         $path = config('infyom.laravel_generator.path.schema_files', base_path('resources/model_schemas/'));
 
-        $fileName = $this->commandData->modelName.'.json';
+        $fileName = $this->commandData->modelName . '.json';
 
-        if (file_exists($path.$fileName) && !$this->confirmOverwrite($fileName)) {
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
             return;
         }
         FileUtil::createFile($path, $fileName, json_encode($fileFields, JSON_PRETTY_PRINT));
@@ -256,8 +266,8 @@ class BaseCommand extends LaravelGeneratorBaseCommand
     protected function confirmOverwrite($fileName, $prompt = '')
     {
         $prompt = (empty($prompt))
-            ? $fileName.' already exists. Do you want to overwrite it? [y|N]'
-            : $prompt;
+        ? $fileName . ' already exists. Do you want to overwrite it? [y|N]'
+        : $prompt;
 
         return $this->confirm($prompt, false);
     }
@@ -271,19 +281,21 @@ class BaseCommand extends LaravelGeneratorBaseCommand
     public function getOptions()
     {
         return [
-        	/**
-        	 * tian add start
-        	 */
+            /**
+             * tian add start
+             */
             // 是否需要 `rbac` 鉴权的参数
             ['rbac', null, InputOption::VALUE_REQUIRED, 'judging if you need it or not "rbac". (option:null, true)'],
             // form表单模式, 比如 `laravel-admin`, `larvel-backpack`等
             ['formMode', null, InputOption::VALUE_REQUIRED, 'Form Mode(options:empty, laravel-backpack, laravel-admin)'],
             // 过滤文件【过滤区域的字段信息】
             ['filterFieldsFile', null, InputOption::VALUE_REQUIRED, 'Filter Fields input as json file'],
-        	/**
-        	 * tian add end
-        	 */
-        	
+            // 模型命名空间的映射
+            ['namespaceModelMappingFile', null, InputOption::VALUE_REQUIRED, 'Model Namespace Mapping input as json file'],
+            /**
+             * tian add end
+             */
+
             ['fieldsFile', null, InputOption::VALUE_REQUIRED, 'Fields input as json file'],
             ['jsonFromGUI', null, InputOption::VALUE_REQUIRED, 'Direct Json string while using GUI interface'],
             ['tableName', null, InputOption::VALUE_REQUIRED, 'Table Name'],

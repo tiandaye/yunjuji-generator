@@ -23,7 +23,7 @@ class RequestGenerator extends BaseGenerator
     /**
      * tian add
      * [$requestFileName 请求文件路径]
-     * @var string tian add 
+     * @var string tian add
      */
     private $requestFileName;
 
@@ -50,24 +50,29 @@ class RequestGenerator extends BaseGenerator
 
     public function __construct(CommandData $commandData)
     {
-        // tian comment
+        /**
+         * tian comment start
+         */
         // $this->commandData = $commandData;
         // $this->path = $commandData->config->pathRequest;
         // $this->createFileName = 'Create'.$this->commandData->modelName.'Request.php';
         // $this->updateFileName = 'Update'.$this->commandData->modelName.'Request.php';
+        /**
+         * tian comment end
+         */
 
         /**
          * tian add start
          */
-        $this->commandData = $commandData;
-        $this->path = $commandData->config->pathRequest;
+        $this->commandData      = $commandData;
+        $this->path             = $commandData->config->pathRequest;
         $this->baseTemplateType = config('yunjuji.generator.templates.base', 'yunjuji-generator');
         if ($this->commandData->getOption('formMode')) {
-            $this->formMode = $this->commandData->getOption('formMode');
+            $this->formMode       = $this->commandData->getOption('formMode');
             $this->formModePrefix = $this->formMode . '.';
         }
         // 请求不以两个文件(create, update)的形式出现
-        $this->requestFileName =  $this->commandData->modelName . 'Request.php';
+        $this->requestFileName = $this->commandData->modelName . 'Request.php';
         /**
          * tian add end
          */
@@ -79,10 +84,15 @@ class RequestGenerator extends BaseGenerator
      */
     public function generate()
     {
-        // tian comment
+        /**
+         * tian comment start
+         */
         // $this->generateCreateRequest();
         // $this->generateUpdateRequest();
-        
+        /**
+         * tian comment end
+         */
+
         /**
          * tian add start
          */
@@ -131,15 +141,15 @@ class RequestGenerator extends BaseGenerator
     public function rollback()
     {
         if ($this->rollbackFile($this->path, $this->createFileName)) {
-            $this->commandData->commandComment('Create API Request file deleted: '.$this->createFileName);
+            $this->commandData->commandComment('Create API Request file deleted: ' . $this->createFileName);
         }
 
         if ($this->rollbackFile($this->path, $this->updateFileName)) {
-            $this->commandData->commandComment('Update API Request file deleted: '.$this->updateFileName);
+            $this->commandData->commandComment('Update API Request file deleted: ' . $this->updateFileName);
         }
 
         if ($this->rollbackFile($this->path, $this->requestFileName)) {
-            $this->commandData->commandComment('API Request file deleted: '.$this->requestFileName);
+            $this->commandData->commandComment('API Request file deleted: ' . $this->requestFileName);
         }
     }
 
@@ -153,7 +163,8 @@ class RequestGenerator extends BaseGenerator
         $templateData = yunjuji_get_template($this->formModePrefix . 'scaffold.request.request', $this->baseTemplateType);
 
         $templateData = yunjuji_fill_template($this->commandData->dynamicVars, $templateData);
-        $templateData = str_replace('$RULES$', implode(','.infy_nl_tab(1, 2), $this->generateRules()), $templateData);
+        $templateData = str_replace('$CREATE_RULES$', implode(',' . infy_nl_tab(1, 2), $this->generateCreateRules()), $templateData);
+        $templateData = str_replace('$UPDATE_RULES$', implode(',' . infy_nl_tab(1, 2), $this->generateUpdateRules()), $templateData);
 
         FileUtil::createFile($this->path, $this->requestFileName, $templateData);
 
@@ -163,16 +174,54 @@ class RequestGenerator extends BaseGenerator
 
     /**
      * tian add
-     * [generateRules 为了在请求中生成 `rules` ]
+     * [generateCreateRules 为了在请求中生成 `create rules` ]
      * @return [type] [description]
      */
-    private function generateRules()
+    private function generateCreateRules()
     {
         $rules = [];
 
         foreach ($this->commandData->fields as $field) {
             if (!empty($field->validations)) {
-                $rule = "'".$field->name."' => '".$field->validations."'";
+                $rule    = yunjuji_tab(4 * 3) . "'" . $field->name . "' => '" . $field->validations . "'";
+                $rules[] = $rule;
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * tian add
+     * [generateUpdateRules 为了在请求中生成 `update rules` ]
+     * @return [type] [description]
+     */
+    private function generateUpdateRules()
+    {
+        $rules = [];
+
+        foreach ($this->commandData->fields as $field) {
+            if (!empty($field->validations)) {
+                $flag = false;
+                $validations = explode('|', $field->validations);
+                for ($i=0, $count = count($validations); $i < $count; $i++) {
+                    if ($i == 0 ) {
+                        $validations[$i] = '\'' . $validations[$i];
+                    } else {
+                        $validations[$i] = ' . \'|' . $validations[$i];
+                    }
+                    // 如果是 `唯一性` 校验, 更新的时候需要将自己排除了
+                    if (str_contains($validations[$i], "unique:")) {
+                        $flag = true;
+                        $validations[$i] .= ',\' . $id . \'';
+                    }
+                    $validations[$i] = $validations[$i] . '\'';
+                }
+                if ($flag) {
+                    $rule    = yunjuji_tab(4 * 3) . "'" . $field->name . "' => " . implode('', $validations);
+                } else {
+                    $rule    = yunjuji_tab(4 * 3) . "'" . $field->name . "' => '" . $field->validations . "'";
+                }
                 $rules[] = $rule;
             }
         }
