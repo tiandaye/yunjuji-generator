@@ -161,8 +161,8 @@ composer require yunjuji/yunjuji-generator:dev-dev --prefer-source
 ## csv说明
 暂无
 ## json文件说明
-### <span id="fields-file">字段json文件</span>
-- 格式说明:
+### 字段json文件
+- 格式说明:<span id="fields-file">#</span>
 	- json格式. 整个文件是一个 `[]`
 - 参数说明
 	- name-字段名
@@ -253,8 +253,8 @@ composer require yunjuji/yunjuji-generator:dev-dev --prefer-source
     "inIndex": false
 }]
 ```
-### <span id="filter-fields-file">过滤字段json文件</span>
-- 格式说明:
+### 过滤字段json文件
+- 格式说明:<span id="filter-fields-file">#</span>
 	- json格式. 整个文件是一个 `[]`
 - 参数说明
 	- label-标题
@@ -306,8 +306,8 @@ composer require yunjuji/yunjuji-generator:dev-dev --prefer-source
     "htmlType": "datetime"
 }]
 ```
-### <span id="namespace-model-mapping-file">命名空间映射json文件</span>
-- 格式说明
+### 命名空间映射json文件
+- 格式说明<span id="namespace-model-mapping-file">#</span>
 	- json格式. `key-value` 形式, `key` 表示 `模型名`, `value` 表示 `命名空间`, 整个文件是一个 `{}`
 - 参数说明
 	- 参数: 无. 
