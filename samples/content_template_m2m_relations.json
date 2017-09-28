@@ -1,0 +1,73 @@
+[{
+    "name": "id",
+    "dbType": "increments",
+    "htmlType": "",
+    "validations": "",
+    "searchable": false,
+    "fillable": false,
+    "primary": true,
+    "inForm": false,
+    "inIndex": false
+}, {
+    "label": "内容模板编号",
+    "title": "内容模板编号",
+    "name": "template_no",
+    "dbType": "string,100:nullable:index",
+    "validations": "required|unique:content_templates,template_no|max:100",
+    "htmlType": "text"
+}, {
+    "label": "内容模板名称",
+    "title": "内容模板名称",
+    "name": "name",
+    "dbType": "string,100",
+    "validations": "required|max:100",
+    "htmlType": "text"
+}, {
+    "label": "模板别名",
+    "title": "模板别名",
+    "name": "alias",
+    "dbType": "string,100",
+    "validations": "required|max:100",
+    "htmlType": "text"
+}, {
+    "label": "模板类型",
+    "title": "模板类型",
+    "type": "relation",
+    "validations": "required",
+    "htmlType": "checkbox",
+    "relation": "mtm,ContentTemplateType,content_template_content_template_types,content_template_id,content_template_type_id",
+    "displayField": "ContentTemplateType,id,alias"
+}, {
+    "label": "描述",
+    "title": "别名",
+    "name": "description",
+    "dbType": "text",
+    "htmlType": "textarea"
+}, {
+    "label": "排序",
+    "title": "排序",
+    "name": "listorder",
+    "dbType": "integer",
+    "validations": "required",
+    "htmlType": "number"
+}, {
+    "name": "created_at",
+    "dbType": "timestamp",
+    "htmlType": "",
+    "validations": "",
+    "searchable": false,
+    "fillable": false,
+    "primary": false,
+    "inForm": false,
+    "inIndex": false
+}, {
+    "name": "updated_at",
+    "dbType": "timestamp",
+    "htmlType": "",
+    "validations": "",
+    "searchable": false,
+    "fillable": false,
+    "primary": false,
+    "inForm": false,
+    "inIndex": false
+}]

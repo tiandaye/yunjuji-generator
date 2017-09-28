@@ -109,111 +109,6 @@ class ControllerGenerator extends BaseGenerator
             $templateData = yunjuji_get_template('scaffold.controller.controller', $this->baseTemplateType);
         }
 
-        // 预加载模型关联
-        $modelRelationsStr = '';
-        $modelRelationsArr = [];
-        // create, edit等函数里添加获取选项和给前端传递选项参数
-        $fieldOptionValueStr     = '';
-        $withFieldOptionValueStr = '';
-        $withFieldOptionValueArr = [];
-
-        // 增加多对多关联的store, update, destroy方法
-        $modelRelationsStoreStr   = '';
-        $modelRelationsUpdateStr  = '';
-        $modelRelationsDestroyStr = '';
-
-        // 遍历有关联的字段, 给原先的 `laravel-collection` 的 `form` 的 `select` 提供服务器端 `options`
-        foreach ($this->commandData->hasRelationFields as $key => $relationField) {
-            // `type`为 `mtm`的字段: 0代表第二张表的表名也是关系名, 1代表的是第三张表的表名, 2代表主表对应的字段, 3代表第二张表对应的字段
-            // 如果关联字段是1t1或者是m2m,并且控件类型是select,并且没有选项值【说明是远端读取】
-            if (($relationField['type'] == '1t1' || $relationField['type'] == 'mtm') && in_array($relationField['htmlType'], array('select')) && count($relationField['htmlValues']) == 0) {
-                // 得到一个stub模板
-                $optionsTemplateData = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.form-fields.get-options.' . $relationField['htmlType'], $this->baseTemplateType);
-                // dd($optionsTemplateData);
-                //进行模板值替换, 临时变量【temp+字段名+表名】
-                $tempTableName = $relationField['displayField'][0];
-                if (substr($tempTableName, -1) != 's') {
-                    $tempTableName .= 's';
-                }
-                $optionsTemplateData = str_replace('$TEMP_FIELD_OPTIONS$', 'temp_' . $relationField['name'] . '_' . $relationField['displayField'][0] . 's', $optionsTemplateData);
-                // 传递给前端的变量
-                $optionsTemplateData = str_replace('$FIELD_OPTIONS$', $relationField['name'] . '_' . $relationField['displayField'][0] . 's', $optionsTemplateData);
-                $optionsTemplateData = str_replace('$TEMP_FIELD_OPTION$', 'temp_' . $relationField['name'] . '_' . $relationField['displayField'][0], $optionsTemplateData);
-                // 表名
-                $optionsTemplateData = str_replace('$TABLE_NAME$', $tempTableName, $optionsTemplateData);
-                // key
-                $optionsTemplateData = str_replace('$KEY$', $relationField['displayField'][1], $optionsTemplateData);
-                // value
-                $optionsTemplateData = str_replace('$VALUE$', $relationField['displayField'][2], $optionsTemplateData);
-                // 添加到变量 `$fieldOptionValueStr` 和 `$withFieldOptionValueStr` 里面
-                $fieldOptionValueStr .= $optionsTemplateData;
-                $withFieldOptionValueArr[] = '\'' . $relationField['name'] . '_' . $relationField['displayField'][0] . 's' . '\' => $' . $relationField['name'] . '_' . $relationField['displayField'][0] . 's';
-            }
-
-            // 关联字段是1t1改为【1t1或者是m2m】
-            if ($relationField['type'] == 'mtm') {
-                //记住mtm是有五个参数, 1t1是有四个参数
-                $tempRelationName = camel_case($relationField['inputs'][0]);
-                if (substr($tempRelationName, -1) != 's') {
-                    $tempRelationName .= 's';
-                }
-                $modelRelationsArr[] = $tempRelationName;
-
-                // 增加多对多关联的store, update, destroy方法
-                // 新增
-                $mtmStoreTemplateData = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relations.mtm.store', $this->baseTemplateType);
-                $mtmStoreTemplateData = fill_template($this->commandData->dynamicVars, $mtmStoreTemplateData);
-                // 替换字段【关联名和对应的字段表】
-                $mtmStoreTemplateData = str_replace('$RELATION_NAME$', $tempRelationName, $mtmStoreTemplateData);
-                $mtmStoreTemplateData = str_replace('$FIELD_NAME$', $relationField['inputs'][0], $mtmStoreTemplateData);
-                $modelRelationsStoreStr .= $mtmStoreTemplateData;
-                // 编辑
-                $mtmUpdateTemplateData = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relations.mtm.update', $this->baseTemplateType);
-                $mtmUpdateTemplateData = fill_template($this->commandData->dynamicVars, $mtmUpdateTemplateData);
-                // 替换字段【关联名和对应的字段表】
-                $mtmUpdateTemplateData = str_replace('$RELATION_NAME$', $tempRelationName, $mtmUpdateTemplateData);
-                $mtmUpdateTemplateData = str_replace('$FIELD_NAME$', $relationField['inputs'][0], $mtmUpdateTemplateData);
-                $modelRelationsUpdateStr .= $mtmUpdateTemplateData;
-                // 删除
-                $mtmDestoryTemplateData = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relations.mtm.destroy', $this->baseTemplateType);
-                $mtmDestoryTemplateData = fill_template($this->commandData->dynamicVars, $mtmDestoryTemplateData);
-                // 替换字段【关联名和对应的字段表】
-                $mtmDestoryTemplateData = str_replace('$RELATION_NAME$', $tempRelationName, $mtmDestoryTemplateData);
-                $mtmDestoryTemplateData = str_replace('$RELATION_FIELD$', $relationField['inputs'][2], $mtmDestoryTemplateData);
-                $modelRelationsDestroyStr .= $mtmDestoryTemplateData;
-            } else if ($relationField['type'] == '1t1') {
-                $modelRelationsArr[] = camel_case($relationField['inputs'][0]) . $relationField['number'];
-            } else if (in_array($relationField['type'], array('hmt', 'mhm', 'mhtm'))) {
-                // 【多对多多态, 多态, 远程一对多】
-                $modelRelationsArr[] = camel_case($relationField['inputs'][0]);
-            }
-        }
-
-        // 如果有关联的话，替换变量，否则替换为空
-        if (count($modelRelationsArr) > 0) {
-            $modelRelationsStr = implode('\',\'', $modelRelationsArr);
-            $modelRelationsStr = 'with([\'' . $modelRelationsStr . '\'])->';
-            // datatables函数里面添加预加载with()
-            $templateData = str_replace('$MODEL_RELATIONS$', $modelRelationsStr, $templateData);
-            // create edit函数里面添加【获得选项】
-            $templateData = str_replace('$FIELD_OPTION_VALUE$', $fieldOptionValueStr, $templateData);
-            $templateData = str_replace('$WITH_FIELD_OPTION_VALUE$', '->with([' . implode(',', $withFieldOptionValueArr) . '])', $templateData);
-        } else {
-            $templateData = str_replace('$MODEL_RELATIONS$', '', $templateData);
-            // create edit函数里面添加【获得选项】
-            $templateData = str_replace('$FIELD_OPTION_VALUE$', '', $templateData);
-            $templateData = str_replace('$WITH_FIELD_OPTION_VALUE$', '', $templateData);
-        }
-
-        // 增加多对多关联的store, update, destroy方法
-        // 新增
-        $templateData = str_replace('$MODEL_M2M_RELATIONS_STORE$', $modelRelationsStoreStr, $templateData);
-        // 编辑
-        $templateData = str_replace('$MODEL_M2M_RELATIONS_UPDATE$', $modelRelationsUpdateStr, $templateData);
-        // 删除
-        $templateData = str_replace('$MODEL_M2M_RELATIONS_DESTORY$', $modelRelationsDestroyStr, $templateData);
-        $templateData = fill_template($this->commandData->dynamicVars, $templateData);
-
         // 【form表单模式为laravel-admin时使用，添加options字段】
         if ($this->formMode) {
             if ($this->formMode == 'laravel-backpack') {
@@ -280,8 +175,10 @@ class ControllerGenerator extends BaseGenerator
                 // 替换模板
                 $templateData = str_replace('$BACKPACK_FIELD_LIST$', $strBackpackFieldList, $templateData);
             } else if ($this->formMode == 'laravel-admin') {
-                // 获取 `grid` 的 `column` 的模板
+                // 获取 `grid` 的 `column` 的普通模板
                 $strGridColumnTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.column', $this->baseTemplateType);
+                // 获取 `grid` 的 `mtm column` 的模板
+                $strGridMtmColumnTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.m2m_column', $this->baseTemplateType);
                 // `form` 的 `get options`. 获取遍历数据的模板
                 $strFormGetOptionsTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.form-fields.display.get-options', $this->baseTemplateType);
                 // `form` 的 `option`. 选项的模板[->option($OPTIONS$);]
@@ -298,7 +195,76 @@ class ControllerGenerator extends BaseGenerator
                 $strLaravelAdminFilterFieldList = '';
                 // 模型的命名空间
                 $namespaceModelList = [];
+                // 增加多对多关联的store, update, destroy方法
+                $strModelRelationsStore   = '';
+                $strModelRelationsUpdate  = '';
+                $strModelRelationsDestroy = '';
+                $m2mFlag = false;
 
+                /**
+                 * relations crud start
+                 */
+                // 多对多关联的 `store`, `update`, `destroy`方法, 遍历有关联的字段, 现在只处理对多对关系
+                foreach ($this->commandData->hasRelationFields as $key => $relationField) {
+                    // 判断关联关系
+                    if ($relationField['type'] == 'mtm') {
+                        $m2mFlag = true;
+                        // `mtm` 有五个参数, `1t1` 有四个参数
+                        $tempRelationName = camel_case($relationField['inputs'][0]);
+                        if (substr($tempRelationName, -1) != 's') {
+                            $tempRelationName .= 's';
+                        }
+                        // 增加多对多关联的 `store`, `update`, `destroy`方法
+                        // 新增
+                        $mtmStoreTemplateData = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relations.mtm.store', $this->baseTemplateType);
+                        $mtmStoreTemplateData = fill_template($this->commandData->dynamicVars, $mtmStoreTemplateData);
+                        // 替换字段【关联名和对应的字段表】
+                        $mtmStoreTemplateData = str_replace('$RELATION_NAME$', $tempRelationName, $mtmStoreTemplateData);
+                        $mtmStoreTemplateData = str_replace('$FIELD_NAME$', $tempRelationName, $mtmStoreTemplateData);
+                        // $mtmStoreTemplateData = yunjuji_tab(4*3) . $mtmStoreTemplateData;
+                        $strModelRelationsStore .= $mtmStoreTemplateData;
+
+                        // 编辑
+                        $mtmUpdateTemplateData = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relations.mtm.update', $this->baseTemplateType);
+                        $mtmUpdateTemplateData = fill_template($this->commandData->dynamicVars, $mtmUpdateTemplateData);
+                        // 替换字段【关联名和对应的字段表】
+                        $mtmUpdateTemplateData = str_replace('$RELATION_NAME$', $tempRelationName, $mtmUpdateTemplateData);
+                        $mtmUpdateTemplateData = str_replace('$FIELD_NAME$', $tempRelationName, $mtmUpdateTemplateData);
+                        // $mtmUpdateTemplateData = yunjuji_tab(4*3) . $mtmUpdateTemplateData;
+                        $strModelRelationsUpdate .= $mtmUpdateTemplateData;
+
+                        // 删除
+                        $mtmDestoryTemplateData = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relations.mtm.destroy', $this->baseTemplateType);
+                        $mtmDestoryTemplateData = fill_template($this->commandData->dynamicVars, $mtmDestoryTemplateData);
+                        // 替换字段【关联名和对应的字段表】
+                        $mtmDestoryTemplateData = str_replace('$RELATION_NAME$', $tempRelationName, $mtmDestoryTemplateData);
+                        $mtmDestoryTemplateData = str_replace('$RELATION_FIELD$', $relationField['inputs'][2], $mtmDestoryTemplateData);
+                        // $mtmDestoryTemplateData = yunjuji_tab(4*3) . $mtmDestoryTemplateData;
+                        $strModelRelationsDestroy .= $mtmDestoryTemplateData;
+                    } else if ($relationField['type'] == '1t1') {
+                    } else if (in_array($relationField['type'], array('hmt', 'mhm', 'mhtm'))) {
+                    }
+                }
+                if ($m2mFlag) {
+                    $templateM2mStore = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.relations.mtm.store', $this->baseTemplateType);
+                    $templateM2mUpdate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.relations.mtm.update', $this->baseTemplateType);
+                    // 多对多关联的 `store`, `update`, `destroy` 方法
+                    // 新增
+                    $strModelRelationsStore = str_replace('$MODEL_M2M_RELATIONS_STORE$', $strModelRelationsStore, $templateM2mStore);
+                    // 编辑
+                    $strModelRelationsUpdate = str_replace('$MODEL_M2M_RELATIONS_UPDATE$', $strModelRelationsUpdate, $templateM2mUpdate);
+                }
+                $templateData = str_replace('$LARAVEL_ADMIN_MODEL_M2M_RELATIONS_STORE$', $strModelRelationsStore, $templateData);
+                $templateData = str_replace('$LARAVEL_ADMIN_MODEL_M2M_RELATIONS_UPDATE$', $strModelRelationsUpdate, $templateData);
+                $templateData = str_replace('$LARAVEL_ADMIN_MODEL_M2M_RELATIONS_DESTORY$', $strModelRelationsDestroy, $templateData);
+                $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+                /**
+                 * relations crud end
+                 */
+
+                /**
+                 * form start
+                 */
                 // `laravel-admin` 的 `form` 里面的字段, 遍历 `普通字段` 和 `m2m` 关联字段
                 foreach (array_merge($this->commandData->fields, $this->commandData->hasM2mRelationFields) as $key => $field) {
                     // 如果不需要在 `form` 显示, 则跳过
@@ -351,7 +317,7 @@ class ControllerGenerator extends BaseGenerator
                         $strOptionTemplates = str_replace('$OPTIONS$', '$' . $optionsFieldOptions, $strFormOptionTemplate);
                         $strFromType        = $strHtmlType . '(\'' . $name . '\', \'' . $label . '\')' . $strOptionTemplates;
                         $strLaravelAdminFieldList .= $strModelDisplay;
-                        // 如果字段的options需要用到模型, 则需要在命名空间中引入该模型
+                        // 如果字段的 `options` 需要用到模型, 则需要在命名空间中引入该模型
                         if (!in_array($optionsModelName, $namespaceModelList)) {
                             $namespaceModelList[] = $this->commandData->namespaceModelMapping[$optionsModelName];
                         }
@@ -395,28 +361,31 @@ class ControllerGenerator extends BaseGenerator
 
                 // `laravel-admin` 的 `form` 中字段列表
                 $templateData = str_replace('$LARAVELADMIN_FIELD_LIST$', $strLaravelAdminFieldList, $templateData);
-
+                /**
+                 * form end
+                 */
+                
+                /**
+                 * grid start
+                 */
                 // `laravel-admin` 的 `grid` 里面的字段, 遍历普通字段和m2m关联字段
                 foreach (array_merge($this->commandData->fields, $this->commandData->hasM2mRelationFields) as $key => $field) {
                     if (!$field->inIndex) {
                         continue;
                     }
-
-                    // 判断是否有name字段
+                    // 判断是否有 `name` 字段
                     $flag = false;
+                    // 是 `grid` 里面的 `column` 是 `多对多关联关系` 还是 `普通模式`
+                    $columnFlag = false;
                     // name
                     $name = '';
                     // title
                     $title = '';
                     // name
                     if (!empty($field->name)) {
+                        $flag = true;
                         $name  = $field->name;
                         $title = $field->name;
-                        // 如果需要
-                        if (count($field->displayField) > 0) {
-                            $name = camel_case($field->displayField[0]) . '.' . $field->displayField[2];
-                        }
-                        $flag = true;
                     }
                     // title
                     if (!empty($field->title)) {
@@ -425,15 +394,37 @@ class ControllerGenerator extends BaseGenerator
 
                     // 单列模板替换
                     if ($flag) {
-                        $tempGridColumnData = str_replace('$FIELD_NAME$', $name, $strGridColumnTemplate);
-                        $tempGridColumnData = str_replace('$FIELD_TITLE$', $title, $tempGridColumnData . "\n");
+                        // `mtm` 关联关系
+                        if (array_key_exists($name, $this->commandData->hasRelationFields) && isset($this->commandData->hasRelationFields[$name]['type']) && $this->commandData->hasRelationFields[$name]['type'] === 'mtm') {
+                            // 需要显示的 `别名` 字段
+                            $displayFieldName = 'id';
+                            if (count($field->displayField) > 0) {
+                                $displayFieldName = $field->displayField[2];
+                            }
+                            $tempGridColumnData = str_replace('$MODEL_RELATION$', $name, $strGridMtmColumnTemplate);
+                            $tempGridColumnData = str_replace('$FIELD_TITLE$', $title, $tempGridColumnData);
+                            $tempGridColumnData = str_replace('$DIDPLAY_FIELD_NAME$', $displayFieldName, $tempGridColumnData . "\n");
+                        } else {
+                            // 需要显示的 `别名` 字段
+                            if (count($field->displayField) > 0) {
+                                $name = camel_case($field->displayField[0]) . '.' . $field->displayField[2];
+                            }
+                            $tempGridColumnData = str_replace('$FIELD_NAME$', $name, $strGridColumnTemplate);
+                            $tempGridColumnData = str_replace('$FIELD_TITLE$', $title, $tempGridColumnData . "\n");
+                        }
                         $strLaravelAdminColumnList .= $tempGridColumnData;
                     }
                 }
 
                 // 替换 `grid` 中的 `column` 模板
                 $templateData = str_replace('$LARAVELADMIN_COLUMN_LIST$', $strLaravelAdminColumnList, $templateData);
+                /**
+                 * grid end
+                 */
 
+                /**
+                 * filter start
+                 */
                 // 过滤字段
                 if (count($this->commandData->filterFields) > 0) {
                     // 遍历过滤字段
@@ -529,7 +520,13 @@ class ControllerGenerator extends BaseGenerator
 
                 // 替换 `filter`
                 $templateData = str_replace('$LARAVELADMIN_FILTER_FIELD_LIST$', $strLaravelAdminFilterFieldList, $templateData);
-                
+                /**
+                 * filter end
+                 */
+
+                /**
+                 * namespace start
+                 */
                 // 拼装 `模型命名空间`
                 $aNamespaceModelList = [];
                 foreach ($namespaceModelList as $key => $value) {
@@ -538,6 +535,9 @@ class ControllerGenerator extends BaseGenerator
 
                 // 替换 `模型命名空间`
                 $templateData = str_replace('$USE_NAMESPACE_MODEL_LIST$', implode('\n', $aNamespaceModelList), $templateData);
+                /**
+                 * namespace end
+                 */
             }
         }
         /**

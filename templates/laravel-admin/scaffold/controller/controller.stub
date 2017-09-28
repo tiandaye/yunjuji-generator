@@ -75,7 +75,7 @@ class $MODEL_NAME$Controller extends Controller
         $input = $request->all();
 
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->create($input);
-
+$LARAVEL_ADMIN_MODEL_M2M_RELATIONS_STORE$
         Flash::success(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.saved_success'));
 
         return Input::get('_previous_') ? redirect(Input::get('_previous_')) : redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
@@ -140,9 +140,7 @@ class $MODEL_NAME$Controller extends Controller
         }
 
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->update($request->all(), $id);
-        $MODEL_M2M_RELATIONS_UPDATE$
-
-
+$LARAVEL_ADMIN_MODEL_M2M_RELATIONS_UPDATE$
         Flash::success(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.updated_success'));
 
         return Input::get('_previous_') ? redirect(Input::get('_previous_')) : redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
@@ -180,7 +178,7 @@ class $MODEL_NAME$Controller extends Controller
         }
 
         if ($flag = $this->$MODEL_NAME_CAMEL$Repository->delete($id)) {
-        $MODEL_M2M_RELATIONS_DESTORY$
+$LARAVEL_ADMIN_MODEL_M2M_RELATIONS_DESTORY$
             return response()->json(['message' => __('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.deleted_success'), 'status' => $flag]);
         } else {
             return response()->json(['message' => __('base.deleted.error'), 'status' => $flag]);

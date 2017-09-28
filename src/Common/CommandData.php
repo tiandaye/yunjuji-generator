@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use InfyOm\Generator\Common\CommandData as LaravelGeneratorCommandData;
 use InfyOm\Generator\Utils\GeneratorFieldsInputUtil;
 use InfyOm\Generator\Utils\TableFieldsGenerator;
+use InfyOm\Generator\Utils\FileUtil;
 
 class CommandData extends LaravelGeneratorCommandData
 {
@@ -337,10 +338,14 @@ class CommandData extends LaravelGeneratorCommandData
                          * tian add
                          */
                         $tempInputs = explode(',', $field['relation']);
-                        // 如果是m2m/hmt远层一对多/多态关联/多态多对多关联-则需要将中间表的表名当做字段存到字段里面
+                        // 如果是m2m多对多/hmt远层一对多/多态关联/多态多对多关联-则需要将中间表的表名当做字段存到字段里面
                         if ($tempInputs[0] == 'mtm') {
-                            // 用中间表表名当字段名
-                            $field['name'] = $tempInputs[1];
+                            // 用 `模型名` 当 `字段名`
+                            $relationName = camel_case($tempInputs[1]);
+                            if (substr($relationName, -1) != 's') {
+                                $relationName .= 's';
+                            }
+                            $field['name'] = $relationName;
                             // 只是为了防止报错才加这行【因为我现在是试图将一个关系当做一个字段】
                             $field['dbType'] = 'integer';
                             $tempField       = GeneratorField::parseFieldFromFile($field);
@@ -350,6 +355,25 @@ class CommandData extends LaravelGeneratorCommandData
                             $this->relations[]            = $tempRelation;
                             // 给hasRelationFields进行赋值
                             $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
+
+                            // `多对多关联` 产生 `中间表` 的 `migrate`
+                            $templateData = get_template('migration', 'laravel-generator');
+                            // $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+                            $fields = [];
+                            // $fields[] = '$table->increments(\'id\', 10)->unsigned();';
+                            // $fields[] = '$table->integer(\'' . $tempInputs[3] . '\', 10)->unsigned();';
+                            // $fields[] = '$table->integer(\'' . $tempInputs[4] . '\', 10)->unsigned();';
+                            $fields[] = '$table->increments(\'id\');';
+                            $fields[] = '$table->integer(\'' . $tempInputs[3] . '\');';
+                            $fields[] = '$table->integer(\'' . $tempInputs[4] . '\');';
+                            $fields[] = '$table->timestamps();';
+                            $tableName = $tempInputs[2];
+                            $templateData = str_replace('$MODEL_NAME_PLURAL$', studly_case($tableName), $templateData);
+                            $templateData = str_replace('$TABLE_NAME$', $tableName, $templateData);
+                            $templateData = str_replace('$FIELDS$', implode(yunjuji_nl_tab(1, 3), $fields), $templateData);
+                            $fileName = date('Y_m_d_His').'_'.'create_'.$tableName.'_table.php';
+                            $path = config('infyom.laravel_generator.path.migration', base_path('database/migrations/'));
+                            FileUtil::createFile($path, $fileName, $templateData);
                         } else if ($tempInputs[0] == 'hmt') {
                             // 用中间表表名当字段名
                             $field['name'] = $tempInputs[1];

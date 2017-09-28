@@ -1,0 +1,4 @@
+        if ($$MODEL_NAME_CAMEL$) {
+$MODEL_M2M_RELATIONS_UPDATE$
+        }
+        
