@@ -4,10 +4,10 @@
  * @Author: admin
  * @Date:   2017-09-29 09:59:47
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-29 10:00:24
+ * @Last Modified time: 2017-09-29 10:22:14
  */
 
-namespace App\Console\Commands;
+namespace Yunjuji\Generator\Console\Commands\Scaffold;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
