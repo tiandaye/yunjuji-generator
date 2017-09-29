@@ -214,7 +214,7 @@ composer require yunjuji/yunjuji-generator:dev-dev --prefer-source
 ## csv说明
 ### 注意点
 1. 多个字段之间统一用 `;` 分隔， 最后一个字段不要加 `;`。
-2. created_at, updated_at, id字段默认添加, 不需要重新指定。`
+2. `created_at`, `updated_at`, `id` 字段默认添加, 不需要重新指定。
 3. `fields` , `foriegns` , `inForms` 等所有属性可以不按顺序, 并且可以根据实际情况选填。比如没有关联关系的模型 `relations` 属性就没有。
 4. 所有的例子以 [媒资点播类资产](http://git.oschina.net/hzyrrjjsyxgs/ott/tree/master/model/entity/asset/video/vasset)为例
 
