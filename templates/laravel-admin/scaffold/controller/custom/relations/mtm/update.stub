@@ -1,3 +1,3 @@
             if (is_array($request->get('$FIELD_NAME$'))) {
-                $$MODEL_NAME_CAMEL$->$RELATION_NAME$()->sync($request->get('$FIELD_NAME$'));
+                $$MODEL_NAME_CAMEL$->$RELATION_NAME$()->sync(array_filter($request->get('$FIELD_NAME$')));
             }

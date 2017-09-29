@@ -15,7 +15,8 @@
     "prefer-stable": true,
     "require": {
         "php": ">=7.0.0",
-        "laravel/framework": "5.5.*"
+        "laravel/framework": "5.5.*",
+        "maatwebsite/excel": "~2.1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~6.0",
@@ -43,10 +44,12 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Yunjuji\\Generator\\YunjujiGeneratorServiceProvider"
+                "Yunjuji\\Generator\\YunjujiGeneratorServiceProvider",
+                "Maatwebsite\\Excel\\ExcelServiceProvider"
             ],
             "aliases": {
-                "YunjujiGenerator": "Yunjuji\\Generator\\Facades\\YunjujiGenerator"
+                "YunjujiGenerator": "Yunjuji\\Generator\\Facades\\YunjujiGenerator",
+                "Excel": "Maatwebsite\\Excel\\Facades\\Excel"
             }
         }
     }

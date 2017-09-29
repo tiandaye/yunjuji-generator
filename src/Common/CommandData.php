@@ -366,7 +366,7 @@ class CommandData extends LaravelGeneratorCommandData
                             $fields[] = '$table->increments(\'id\');';
                             $fields[] = '$table->integer(\'' . $tempInputs[3] . '\');';
                             $fields[] = '$table->integer(\'' . $tempInputs[4] . '\');';
-                            $fields[] = '$table->timestamps();';
+                            // $fields[] = '$table->timestamps();';
                             $tableName = $tempInputs[2];
                             $templateData = str_replace('$MODEL_NAME_PLURAL$', studly_case($tableName), $templateData);
                             $templateData = str_replace('$TABLE_NAME$', $tableName, $templateData);
