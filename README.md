@@ -150,14 +150,67 @@ composer require yunjuji/yunjuji-generator:dev-dev --prefer-source
 - `php artisan yunjuji:scaffold posts --fieldsFile=./vendor/yunjuji/yunjuji-generator/samples/fields_sample.json --paginate=20 --datatables=true --prefix=v1`
 # 参数说明
 ## 命令行说明
+### yunjuji:generateFieldJson 命令, 批量生成 `field.json`
 - 命令说明
-	- 生成脚手架: `php artisan yunjuji:scaffold 模型名`
+	- 批量产生 `field.json` , 通过 `model.csv` 文件生成 `fields.json`: `php artisan yunjuji:generateFieldJson $PATH`
+- 命令选项说明
+	- 无
+- 命令参数说明
+	- `$PATH` - 目录的绝对路径
+### yunjuji:generate 命令, 批量生成脚手架
+- 命令说明
+	- 批量产生脚手架, 通过遍历目录的 `fields.json` 和 `model.json`: `php artisan yunjuji:generate $PATH`
+- 命令选项说明
+	- 无
+- 命令参数说明
+	- `$PATH` - 目录的绝对路径
+### yunjuji:rollback命令, 批量回滚
+- 命令说明
+	- 批量回滚, 通过遍历目录的 `fields.json` 和 `model.json`: `php artisan yunjuji:rollback $PATH`
+- 命令选项说明
+	- 无
+- 命令参数说明
+	- `$PATH` - 目录的绝对路径
+### infyom:rollback命令, 单个回退
+- 命令说明
+	- 单个脚手架回退: `php artisan infyom:rollback $MODEL_NAME $COMMAND_TYPE`
+- 命令选项说明
+	- `--prefix`: 命名空间前缀
+- 命令参数说明
+	- `$MODEL_NAME` - 模型名
+	- `$COMMAND_TYPE` - Command type from api, scaffold or api_scaffold
+### yunjuji:scaffold命令, 单个脚手架生成
+- 命令说明
+	- 生成脚手架: `php artisan yunjuji:scaffold $MODEL_NAME`
 - 命令选项说明
 	- `--fieldsFile`: 字段文件, 包括 `form`和 `grid`. [字段文件格式说明#](#fields-file)
 	- `--filterFieldsFile`: 过滤字段文件. [过滤字段文件格式说明#](#filter-fields-file)
 	- `--namespaceModelMappingFile`: 命名空间映射文件. [命名空间映射文件格式说明#](#namespace-model-mapping-file)
 	- `--prefix`: 命名空间前缀
 - 命令参数说明
+	- `$MODEL_NAME` - 模型名
+### yunjuji:publish命令, 发布
+- 命令说明
+	- 将自动生成的文件发布到指定目录: `php artisan yunjuji:publish $SOURCE_PATH $TARGET_PATH`
+- 命令选项说明
+	- 无
+- 命令参数说明
+	- `$SOURCE_PATH` - 源目录的绝对路径
+	- `$TARGET_PATH` - 目标目录的绝对路径
+### yunjuji:fillData命令, 批量填充数据
+- 命令说明
+	- 批量填充数据: `php artisan yunjuji:fillData $PATH`
+- 命令选项说明
+	- 无
+- 命令参数说明
+	- `$PATH` - 目录的绝对路径
+### yunjuji:dropTable命令, 批量删表
+- 命令说明
+	- 批量填充数据: `php artisan yunjuji:dropTable $PATH`
+- 命令选项说明
+	- 无
+- 命令参数说明
+	- `$PATH` - 目录的绝对路径
 ## csv说明
 ### 注意点
 1. 多个字段之间统一用 `;` 分隔， 最后一个字段不要加 `;`。
