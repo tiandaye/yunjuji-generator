@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-29 09:44:54
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-29 09:47:00
+ * @Last Modified time: 2017-09-29 11:10:41
  */
 
 namespace Yunjuji\Generator\Console\Commands\Scaffold;
@@ -50,7 +50,7 @@ class GenerateCommand extends Command
         // 获取全部的要模型json文件
         $fullMigratePath = $this->getFilePath($path, 'fields.json');
         // 批量执行命令
-        $result = $this->generateCommand($fullMigratePath);
+        $result = $this->generateCommand($fullMigratePath, $path);
     }
 
     /**
@@ -93,7 +93,7 @@ class GenerateCommand extends Command
      * @param  string $path [description]
      * @return [type]       [description]
      */
-    protected function generateCommand($fullMigratePath)
+    protected function generateCommand($fullMigratePath, $path)
     {
         if (is_array($fullMigratePath)) {
             // 命令执行结果
@@ -110,7 +110,17 @@ class GenerateCommand extends Command
                 $modelName = $arrDescription['model_name'];
                 // --prefix
                 $prefixName     = $arrDescription['prefix_name'];
-                $artisanCommand = "php artisan infyom:scaffold $modelName --fieldsFile=$pathValue --datatables=true --formMode=laravel-admin --prefix=$prefixName";
+                $artisanCommand = "php artisan yunjuji:scaffold $modelName --fieldsFile=$pathValue --datatables=true --formMode=laravel-admin --prefix=$prefixName";
+                // 如果存在 `过滤区域` json
+                $filterFilePath = $migrateFileDir . '/filter.json';
+                if (file_exists($filterFilePath)) {
+                    $artisanCommand .= " --filterFieldsFile=$filterFilePath";
+                }
+                // 如果存在 `命名空间映射` json
+                $namespaceModelMappingFilePath = $path . '/namespace_model_mapping.json';;
+                if (file_exists($namespaceModelMappingFilePath)) {
+                    $artisanCommand .= " --namespaceModelMappingFile=$namespaceModelMappingFilePath";
+                }
                 $commandResult[] = passthru("echo no|$artisanCommand", $result);
             }
             return $commandResult;
