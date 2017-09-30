@@ -65,6 +65,7 @@ class RoutesGenerator
          */
         $this->commandData      = $commandData;
         $this->path             = $commandData->config->pathRoutes;
+        
         $this->routeContents    = file_get_contents($this->path);
         $this->baseTemplateType = config('yunjuji.generator.templates.base', 'yunjuji-generator');
         if ($this->commandData->getOption('formMode')) {

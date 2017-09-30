@@ -221,7 +221,7 @@ class GeneratorConfig
 
             $this->pathRequest = $generatePath . '/' . 'app/' . 'Http/Requests/' . $prefix;
 
-            $this->pathRoutes = $generatePath . '/' . 'app/' . 'Http/routes.php';
+            $this->pathRoutes = $generatePath . '/' . 'routes';
 
             $this->pathViews = $generatePath . '/' . 'resources/views/' . $viewPrefix . $this->mSnakePlural . '/';
 
