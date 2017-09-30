@@ -3,7 +3,7 @@ Yunjuji Generator
 # github或者码云上拉取目录使用说明
 ## 目录说明
 - model.csv【字段信息文件, 和你的实体同级，必须】【具体规则参考 `csv说明` 】
-- model.json【文件】
+- model.json【自己的命名空间, 和实体同级，必须】【具体规则参考 `model.json文件`】
 - filter.json【过滤字段文件, 和你的实体同级，非必须】【具体规则参考 `过滤字段json文件`】
 - namespace_model_mapping.json【命名空间映射关系，一个项目只需要一个，放在根目录, 非必须】【具体参考 `命名空间映射json文件`】
 ## csv说明
@@ -51,7 +51,18 @@ score;expiring_at;online_at;offline_at;published_at;season;episode;latest
 vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
 ## json文件说明
 ### model.json文件
-
+- 格式说明:#
+	- json格式:整个文件是一个`{}`
+- 参数说明
+	- model_name:模型名(首字母大写)
+	- perfix_name:目录结构
+- 例子
+```
+{
+	"model_name": "Vseriali",
+	"prefix_name":"Entity\\Asset\\Video"
+}
+```
 ### 过滤字段json文件
 - 格式说明:<span id="filter-fields-file">#</span>
 	- json格式. 整个文件是一个 `[]`
