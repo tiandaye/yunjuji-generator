@@ -3,7 +3,7 @@
 namespace $NAMESPACE_REPOSITORY$;
 
 use $NAMESPACE_MODEL$\$MODEL_NAME$;
-use App\Repositories\BaseRepository;
+use InfyOm\Generator\Common\BaseRepository;
 
 $DOCS$
 class $MODEL_NAME$Repository extends BaseRepository
