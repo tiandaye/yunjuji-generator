@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-27 19:19:00
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-27 19:56:36
+ * @Last Modified time: 2017-09-30 20:11:24
  */
 
 namespace Yunjuji\Generator\Generators;
@@ -27,6 +27,10 @@ class MigrationGenerator extends BaseGenerator
     {
         $this->commandData = $commandData;
         $this->path = config('infyom.laravel_generator.path.migration', base_path('database/migrations/'));
+        if (!empty($commandData->getOption('generatePath'))) {
+            $generatePath = $commandData->getOption('generatePath');
+            $this->path = $generatePath . '/' . 'database/migrations/';
+        }
     }
 
     public function generate()
