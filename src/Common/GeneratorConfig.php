@@ -73,6 +73,8 @@ class GeneratorConfig
         'filterFieldsFile',
         // 模型的命名空间【解决模型不在一个命名空间下】
         'namespaceModelMappingFile',
+        // 生成的路径
+        'generatePath',
         /**
          * tian add end
          */
@@ -122,8 +124,9 @@ class GeneratorConfig
         $this->prepareModelNames();
         // 准备前缀
         $this->preparePrefixes();
-        // 加载路
-        $this->loadPaths();
+        // 加载路径
+        $this->loadPaths($commandData);
+        // $this->loadPaths();
         // 准备表名
         $this->prepareTableName();
         // 准备主键名
@@ -176,7 +179,7 @@ class GeneratorConfig
      * [loadPaths 【加载路径】]
      * @return [type] [description]
      */
-    public function loadPaths()
+    public function loadPaths($commandData)
     {
         $prefix = $this->prefixes['path'];
 
@@ -190,52 +193,144 @@ class GeneratorConfig
             $viewPrefix .= '/';
         }
 
-        $this->pathRepository = config(
-            'infyom.laravel_generator.path.repository',
-            app_path('Repositories/')
-        ) . $prefix;
+        /**
+         * tian add start
+         */
+        if (!empty($commandData->getOption('generatePath'))) {
+            $generatePath = $commandData->getOption('generatePath');
+            $this->pathRepository = $generatePath . '/' . 'app' . '/Repositories/' . $prefix;
 
-        $this->pathModel = config('infyom.laravel_generator.path.model', app_path('Models/')) . $prefix;
-        if (config('infyom.laravel_generator.ignore_model_prefix', false)) {
-            $this->pathModel = config('infyom.laravel_generator.path.model', app_path('Models/'));
+            $this->pathModel = $generatePath . '/' . 'app' . 'Models/' . $prefix;
+            // if (config('infyom.laravel_generator.ignore_model_prefix', false)) {
+            //     $this->pathModel = config('infyom.laravel_generator.path.model', app_path('Models/'));
+            // }
+
+            $this->pathDataTables = $generatePath . '/' . 'app' . 'DataTables/' . $prefix;
+
+            $this->pathApiController = $generatePath . '/' . 'app' . 'Http/Controllers/API/' . $prefix;
+
+            $this->pathApiRequest = $generatePath . '/' . 'app' . 'Http/Requests/API/' . $prefix;
+
+            $this->pathApiRoutes = $generatePath . '/' . 'app' . 'Http/api_routes.php';
+
+            $this->pathApiTests = $generatePath . '/' . 'tests/';
+
+            $this->pathApiTestTraits = $generatePath . '/' . 'tests/traits/';
+
+            $this->pathController = $generatePath . '/' . 'app' . 'Http/Controllers/' . $prefix;
+
+            $this->pathRequest = $generatePath . '/' . 'app' . 'Http/Requests/' . $prefix;
+
+            $this->pathRoutes = $generatePath . '/' . 'app' . 'Http/routes.php';
+
+            $this->pathViews = $generatePath . '/' . 'resources/views/' . $viewPrefix . $this->mSnakePlural . '/';
+
+            $this->modelJsPath = $generatePath . '/' . 'resources/assets/js/models/';
+            );
+        } else {
+            $this->pathRepository = config(
+                'infyom.laravel_generator.path.repository',
+                app_path('Repositories/')
+            ) . $prefix;
+
+            $this->pathModel = config('infyom.laravel_generator.path.model', app_path('Models/')) . $prefix;
+            if (config('infyom.laravel_generator.ignore_model_prefix', false)) {
+                $this->pathModel = config('infyom.laravel_generator.path.model', app_path('Models/'));
+            }
+
+            $this->pathDataTables = config('infyom.laravel_generator.path.datatables', app_path('DataTables/')) . $prefix;
+
+            $this->pathApiController = config(
+                'infyom.laravel_generator.path.api_controller',
+                app_path('Http/Controllers/API/')
+            ) . $prefix;
+
+            $this->pathApiRequest = config(
+                'infyom.laravel_generator.path.api_request',
+                app_path('Http/Requests/API/')
+            ) . $prefix;
+
+            $this->pathApiRoutes = config('infyom.laravel_generator.path.api_routes', app_path('Http/api_routes.php'));
+
+            $this->pathApiTests = config('infyom.laravel_generator.path.api_test', base_path('tests/'));
+
+            $this->pathApiTestTraits = config('infyom.laravel_generator.path.test_trait', base_path('tests/traits/'));
+
+            $this->pathController = config(
+                'infyom.laravel_generator.path.controller',
+                app_path('Http/Controllers/')
+            ) . $prefix;
+
+            $this->pathRequest = config('infyom.laravel_generator.path.request', app_path('Http/Requests/')) . $prefix;
+
+            $this->pathRoutes = config('infyom.laravel_generator.path.routes', app_path('Http/routes.php'));
+
+            $this->pathViews = config(
+                'infyom.laravel_generator.path.views',
+                base_path('resources/views/')
+            ) . $viewPrefix . $this->mSnakePlural . '/';
+
+            $this->modelJsPath = config(
+                'infyom.laravel_generator.path.modelsJs',
+                base_path('resources/assets/js/models/')
+            );
         }
+        /**
+         * tian add end
+         */
 
-        $this->pathDataTables = config('infyom.laravel_generator.path.datatables', app_path('DataTables/')) . $prefix;
+        /**
+         * tian add comment start
+         */
+        // $this->pathRepository = config(
+        //     'infyom.laravel_generator.path.repository',
+        //     app_path('Repositories/')
+        // ) . $prefix;
 
-        $this->pathApiController = config(
-            'infyom.laravel_generator.path.api_controller',
-            app_path('Http/Controllers/API/')
-        ) . $prefix;
+        // $this->pathModel = config('infyom.laravel_generator.path.model', app_path('Models/')) . $prefix;
+        // if (config('infyom.laravel_generator.ignore_model_prefix', false)) {
+        //     $this->pathModel = config('infyom.laravel_generator.path.model', app_path('Models/'));
+        // }
 
-        $this->pathApiRequest = config(
-            'infyom.laravel_generator.path.api_request',
-            app_path('Http/Requests/API/')
-        ) . $prefix;
+        // $this->pathDataTables = config('infyom.laravel_generator.path.datatables', app_path('DataTables/')) . $prefix;
 
-        $this->pathApiRoutes = config('infyom.laravel_generator.path.api_routes', app_path('Http/api_routes.php'));
+        // $this->pathApiController = config(
+        //     'infyom.laravel_generator.path.api_controller',
+        //     app_path('Http/Controllers/API/')
+        // ) . $prefix;
 
-        $this->pathApiTests = config('infyom.laravel_generator.path.api_test', base_path('tests/'));
+        // $this->pathApiRequest = config(
+        //     'infyom.laravel_generator.path.api_request',
+        //     app_path('Http/Requests/API/')
+        // ) . $prefix;
 
-        $this->pathApiTestTraits = config('infyom.laravel_generator.path.test_trait', base_path('tests/traits/'));
+        // $this->pathApiRoutes = config('infyom.laravel_generator.path.api_routes', app_path('Http/api_routes.php'));
 
-        $this->pathController = config(
-            'infyom.laravel_generator.path.controller',
-            app_path('Http/Controllers/')
-        ) . $prefix;
+        // $this->pathApiTests = config('infyom.laravel_generator.path.api_test', base_path('tests/'));
 
-        $this->pathRequest = config('infyom.laravel_generator.path.request', app_path('Http/Requests/')) . $prefix;
+        // $this->pathApiTestTraits = config('infyom.laravel_generator.path.test_trait', base_path('tests/traits/'));
 
-        $this->pathRoutes = config('infyom.laravel_generator.path.routes', app_path('Http/routes.php'));
+        // $this->pathController = config(
+        //     'infyom.laravel_generator.path.controller',
+        //     app_path('Http/Controllers/')
+        // ) . $prefix;
 
-        $this->pathViews = config(
-            'infyom.laravel_generator.path.views',
-            base_path('resources/views/')
-        ) . $viewPrefix . $this->mSnakePlural . '/';
+        // $this->pathRequest = config('infyom.laravel_generator.path.request', app_path('Http/Requests/')) . $prefix;
 
-        $this->modelJsPath = config(
-            'infyom.laravel_generator.path.modelsJs',
-            base_path('resources/assets/js/models/')
-        );
+        // $this->pathRoutes = config('infyom.laravel_generator.path.routes', app_path('Http/routes.php'));
+
+        // $this->pathViews = config(
+        //     'infyom.laravel_generator.path.views',
+        //     base_path('resources/views/')
+        // ) . $viewPrefix . $this->mSnakePlural . '/';
+
+        // $this->modelJsPath = config(
+        //     'infyom.laravel_generator.path.modelsJs',
+        //     base_path('resources/assets/js/models/')
+        // );
+        /**
+         * tian add comment end
+         */
     }
 
     /**

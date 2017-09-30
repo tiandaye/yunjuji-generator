@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-15 14:17:11
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-27 19:20:20
+ * @Last Modified time: 2017-09-30 17:22:30
  */
 
 namespace Yunjuji\Generator\Console\Commands;
@@ -292,6 +292,8 @@ class BaseCommand extends LaravelGeneratorBaseCommand
             ['filterFieldsFile', null, InputOption::VALUE_REQUIRED, 'Filter Fields input as json file'],
             // 模型命名空间的映射
             ['namespaceModelMappingFile', null, InputOption::VALUE_REQUIRED, 'Model Namespace Mapping input as json file'],
+            // 生成的路径
+            ['generatePath', null, InputOption::VALUE_REQUIRED, 'generate path'],
             /**
              * tian add end
              */

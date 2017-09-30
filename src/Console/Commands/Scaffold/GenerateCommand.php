@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-29 09:44:54
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-29 11:10:41
+ * @Last Modified time: 2017-09-30 18:48:38
  */
 
 namespace Yunjuji\Generator\Console\Commands\Scaffold;
@@ -18,7 +18,7 @@ class GenerateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'yunjuji:generate {path}';
+    protected $signature = 'yunjuji:generate {path} {generatePath?}';
 
     /**
      * The console command description.
@@ -46,11 +46,13 @@ class GenerateCommand extends Command
     {
         // 获取要遍历的路径
         $path = $this->argument('path');
+        // 生成的路径
+        $generatePath = $this->argument('generatePath');
         $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
         // 获取全部的要模型json文件
         $fullMigratePath = $this->getFilePath($path, 'fields.json');
         // 批量执行命令
-        $result = $this->generateCommand($fullMigratePath, $path);
+        $result = $this->generateCommand($fullMigratePath, $path, $generatePath);
     }
 
     /**
@@ -93,7 +95,7 @@ class GenerateCommand extends Command
      * @param  string $path [description]
      * @return [type]       [description]
      */
-    protected function generateCommand($fullMigratePath, $path)
+    protected function generateCommand($fullMigratePath, $path, $generatePath = '')
     {
         if (is_array($fullMigratePath)) {
             // 命令执行结果
@@ -111,6 +113,10 @@ class GenerateCommand extends Command
                 // --prefix
                 $prefixName     = $arrDescription['prefix_name'];
                 $artisanCommand = "php artisan yunjuji:scaffold $modelName --fieldsFile=$pathValue --datatables=true --formMode=laravel-admin --prefix=$prefixName";
+                // 生成指定的路径
+                if (!empty($generatePath)) {
+                    $artisanCommand .= " --generatePath=$generatePath";
+                }
                 // 如果存在 `过滤区域` json
                 $filterFilePath = $migrateFileDir . '/filter.json';
                 if (file_exists($filterFilePath)) {

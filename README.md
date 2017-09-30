@@ -1,5 +1,216 @@
 Yunjuji Generator
 ***
+# github或者码云上拉取目录使用说明
+## 目录说明
+- model.csv【字段信息文件, 和你的实体同级，必须】【具体规则参考 `csv说明` 】
+- model.json【文件】
+- filter.json【过滤字段文件, 和你的实体同级，非必须】【具体规则参考 `过滤字段json文件`】
+- namespace_model_mapping.json【命名空间映射关系，一个项目只需要一个，放在根目录, 非必须】【具体参考 `命名空间映射json文件`】
+## csv说明
+### 注意点
+1. 多个字段之间统一用 `;` 分隔， 最后一个字段不要加 `;`。
+2. `created_at`, `updated_at`, `id` 字段默认添加, 不需要重新指定。
+3. `fields` , `foriegns` , `inForms` 等所有属性可以不按顺序, 并且可以根据实际情况选填。比如没有关联关系的模型 `relations` 属性就没有。
+4. 所有的例子以 [媒资点播类资产](http://git.oschina.net/hzyrrjjsyxgs/ott/tree/master/model/entity/asset/video/vasset)为例
+
+### 字段详情
+1. fields-字段列表
+	1. **说明:**fields:【字段】【格式:字段名:字段别名;】
+vasset_no: 视频编号; name: 名称; title: 标题; subtitle: 副标题; spell: 拼音; short_desc: 简述; long_desc: 详述; score: 评分; expiring_at: 失效日期; online_at: 上线日期; offline_at: 下线日期; published_at: 发布日期; season: 第几季; episode: 共几集; latest: 最近更新
+2. foriegns-外键
+	1. **说明:**foriegns:【外键】【格式:字段名:表名(注意一般的表名都是下划线命名法, 并且加s), 映射字段名(如果相同可以省略);】
+vcat_no: vcats; vseason_no: vseasons, vseason_no; vyearcat_no: vyearcats; vareacat_no: vareacats; vareacat_no: vareacats; vlangcat_no: vlangcats
+3. tags-关联关系
+	1. **说明:**tags:【标签】【格式:模型名(大写,没s), 中间表名, 映射关系】
+"mtm,Role,user_roles,user_id,role_id"【设计有问题】
+4. relations-关联关系
+	1. **说明:**relations:【关联关系】【格式: 关联关系类型(1t1:一对一, 1tm:一对多, mt1:反向一对多, m2m:多对多, hmt:远程一对多, mht:多态关联, mhm, mhtm, mhbm), 模型名(大写, 没s), 映射关系(具体分析)】
+"1tm,Writer,writer_id,id"【设计有问题】
+5. query【暂不处理】
+6. sortby【暂不处理】
+7. inForms-是否在form中显示
+	1. **说明:**inForms: 【需要在编辑form里面显示的字段】【格式:字段名;】
+vasset_no;name;title;subtitle;spell;short_desc;long_desc;score;expiring_at;online_at;offline_at;published_at;season;episode;latest
+8. inIndexs-是否在table中显示
+	1. **说明:**inIndexs:【是否需要在表格里面显示字段】【格式:字段名;】
+vasset_no;name;title;subtitle;spell;short_desc;long_desc;score;expiring_at;online_at;offline_at;published_at;season;episode;latest
+9. validations-校验
+	1. **说明:**validations:【校验】【格式:字段名:校验规格(多个校验规则用|);】
+vasset_no:required|max:100;name:required;title:required;subtitle:required;spell:required
+10. htmlTypes-表单控件
+	1. **说明:**htmlTypes:【控件类型】【格式:字段名:控件类型 】
+vasset_no:text;name:text;title:text;subtitle:text;spell:text;short_desc:text;long_desc:textarea;score:number;expiring_at:datetime;online_at:datetime;offline_at:datetime;published_at:datetime;season:text;episode:text;latest:text
+11. dbTypes-数据库字段类型
+	1. **说明:**dbTypes:【数据库字段类型】【格式:字段名:字段类型,字段长度(可选, 如果没有长度则 `,` 和 字段长度都可以不要);】
+vasset_no:string, 100;name:string, 100;title:string, 100;subtitle:string, 100;spell:string, 100;short_desc:string, 100; long_desc:text; score: decimal,10,2; expiring_at: timestamp;online_at: timestamp;offline_at:timestamp;published_at:timestamp;season:string, 10;episode:string, 10;latest:string, 10
+12. nullables-能否为null
+	1. **说明:**nullables:【能否为null】【格式:字段名;】
+score;expiring_at;online_at;offline_at;published_at;season;episode;latest
+13. indexs-是否为索引
+	1. **说明:**indexs:【索引】【格式:字段名;(复合索引目前没考虑)】
+vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
+## json文件说明
+### model.json文件
+
+### 过滤字段json文件
+- 格式说明:<span id="filter-fields-file">#</span>
+	- json格式. 整个文件是一个 `[]`
+- 参数说明
+	- label-标题
+	- name-字段名
+	- operator-操作符
+		- equal: 等于
+		- notEqual: 不等于
+		- like: 模糊匹配
+		- ilike: 不区分大小写
+		- gt: 大于
+		- lt: 小于
+		- between: 范围(可以跟 `time` 或 `datetime` 等控件连用)
+		- in: 某个范围内(和 `multipleSelect` 控件连用)
+		- notIn: 不在某个范围(和 `multipleSelect` 控件连用)
+		- date: date
+		- month: month
+		- year: year
+		- where: 就需要自己写了(现在不支持这个)
+	- htmlType-控件类型
+		- select: 下拉框
+		- multipleSelect: 多选(一般用来配合in和notIn两个需要查询数组的查询类型使用，也可以在where类型的查询中使用)
+		- datetime: 日期
+		- date: 作用和下列代码类似, $filter->equal('column')->datetime(['format' => 'YYYY-MM-DD'])
+		- time: 作用和下列代码类似, $filter->equal('column')->datetime(['format' => 'HH:mm:ss'])
+		- day: 作用和下列代码类似, $filter->equal('column')->datetime(['format' => 'DD'])
+		- month: 作用和下列代码类似, $filter->equal('column')->datetime(['format' => 'MM'])
+		- year: 作用和下列代码类似, $filter->equal('column')->datetime(['format' => 'YYYY'])
+- 例子
+```
+[{
+    "label": "内容模板类型名称",
+    "name": "name",
+    "operator": "like",
+    "htmlType": ""
+}, {
+    "label": "内容模板类型别名",
+    "name": "alias",
+    "operator": "equal",
+    "htmlType": ""
+}, {
+    "label": "模板类型",
+    "name": "content_template_type_id",
+    "operator": "in",
+    "htmlType": "select"
+}, {
+    "label": "创建时间",
+    "name": "created_at",
+    "operator": "between",
+    "htmlType": "datetime"
+}]
+```
+### 命名空间映射json文件
+- 格式说明<span id="namespace-model-mapping-file">#</span>
+	- json格式. `key-value` 形式, `key` 表示 `模型名`, `value` 表示 `命名空间`, 整个文件是一个 `{}`
+- 参数说明
+	- 参数: 无. 
+- 例子
+```
+{
+    "ContentTemplateType": "App\\Models\\Operation\\ContentTemplateType"
+}
+```
+### 字段json文件【不需要看这个】
+- 格式说明:<span id="fields-file">#</span>
+	- json格式. 整个文件是一个 `[]`
+- 参数说明
+	- name-字段名, string
+	- label-表单label, string
+	- title-表格title, string
+    - dbType-数据库类型, string, [支持的所有字段类型, 请参考该链接#](https://d.laravel-china.org/docs/5.5/migrations#创建字段)
+    - htmlType-控件类型, string, [支持的所有控件类型, 请参考该链接#](http://laravel-admin.org/docs/#/zh/model-form-fields)
+    - validations-校验, string, [支持的所有验证规则, 请参考该链接#](https://d.laravel-china.org/docs/5.5/validation#available-validation-rules)
+    - relation-关联关系, string, [支持的所模型关联关系, 请参考该链接#](https://d.laravel-china.org/docs/5.5/eloquent-relationships)
+    - displayField-表格里面显示关联关系的字段值, string, 格式:模型名+key+value
+    - fillable-是否支持批量操作, bool
+    - primary-是否为主键, bool
+    - inForm-是否在表单里面显示, bool
+    - inIndex-是否在表格里显示, bool
+    - options-扩展的参数, string
+    - searchable-可搜索的字段【目前没用】
+- 例子
+```
+[{
+    "name": "id",
+    "dbType": "increments",
+    "htmlType": "",
+    "validations": "",
+    "searchable": false,
+    "fillable": false,
+    "primary": true,
+    "inForm": false,
+    "inIndex": false
+}, {
+    "label": "内容模板编号",
+    "title": "内容模板编号",
+    "name": "template_no",
+    "dbType": "string,100:nullable:index",
+    "validations": "required|unique:content_templates,template_no|max:100",
+    "htmlType": "text"
+}, {
+    "label": "内容模板名称",
+    "title": "内容模板名称",
+    "name": "name",
+    "dbType": "string,100",
+    "validations": "required|max:100",
+    "htmlType": "text"
+}, {
+    "label": "模板别名",
+    "title": "模板别名",
+    "name": "alias",
+    "dbType": "string,100",
+    "validations": "required|max:100",
+    "htmlType": "text"
+}, {
+    "label": "模板类型",
+    "title": "模板类型",
+    "name": "content_template_type_id",
+    "dbType": "integer:unsigned:foreign,content_template_types,id",
+    "validations": "required",
+    "htmlType": "select",
+    "relation": "1t1,ContentTemplateType,id,content_template_type_id",
+    "displayField": "ContentTemplateType,id,alias"
+}, {
+    "label": "描述",
+    "title": "别名",
+    "name": "description",
+    "dbType": "text",
+    "htmlType": "textarea"
+}, {
+    "label": "排序",
+    "title": "排序",
+    "name": "listorder",
+    "dbType": "integer",
+    "validations": "required",
+    "htmlType": "number"
+}, {
+    "name": "created_at",
+    "dbType": "timestamp",
+    "htmlType": "",
+    "validations": "",
+    "searchable": false,
+    "fillable": false,
+    "primary": false,
+    "inForm": false,
+    "inIndex": false
+}, {
+    "name": "updated_at",
+    "dbType": "timestamp",
+    "htmlType": "",
+    "validations": "",
+    "searchable": false,
+    "fillable": false,
+    "primary": false,
+    "inForm": false,
+    "inIndex": false
+}]
+```
 # 安装
 ## 安装自动产生的依赖
 - 在 `composer.json` 中引入
@@ -159,11 +370,12 @@ composer require yunjuji/yunjuji-generator:dev-dev --prefer-source
 	- `$PATH` - 目录的绝对路径
 ### yunjuji:generate 命令, 批量生成脚手架
 - 命令说明
-	- 批量产生脚手架, 通过遍历目录的 `fields.json` 和 `model.json`: `php artisan yunjuji:generate $PATH`
+	- 批量产生脚手架, 通过遍历目录的 `fields.json` 和 `model.json`: `php artisan yunjuji:generate $PATH $GENERATE_PATH?`
 - 命令选项说明
 	- 无
 - 命令参数说明
 	- `$PATH` - 目录的绝对路径
+	- `$GENERATE_PATH` - 可选, 生成代码的路径
 ### yunjuji:rollback命令, 批量回滚
 - 命令说明
 	- 批量回滚, 通过遍历目录的 `fields.json` 和 `model.json`: `php artisan yunjuji:rollback $PATH`
@@ -187,6 +399,7 @@ composer require yunjuji/yunjuji-generator:dev-dev --prefer-source
 	- `--filterFieldsFile`: 过滤字段文件. [过滤字段文件格式说明#](#filter-fields-file)
 	- `--namespaceModelMappingFile`: 命名空间映射文件. [命名空间映射文件格式说明#](#namespace-model-mapping-file)
 	- `--prefix`: 命名空间前缀
+	- `--generatePath`: 生成代码的路径
 - 命令参数说明
 	- `$MODEL_NAME` - 模型名
 ### yunjuji:publish命令, 发布
