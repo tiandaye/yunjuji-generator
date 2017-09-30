@@ -226,7 +226,6 @@ class GeneratorConfig
             $this->pathViews = $generatePath . '/' . 'resources/views/' . $viewPrefix . $this->mSnakePlural . '/';
 
             $this->modelJsPath = $generatePath . '/' . 'resources/assets/js/models/';
-            );
         } else {
             $this->pathRepository = config(
                 'infyom.laravel_generator.path.repository',
