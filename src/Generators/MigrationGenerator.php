@@ -4,7 +4,6 @@
  * @Author: admin
  * @Date:   2017-09-27 19:19:00
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-30 19:55:24
  */
 
 namespace Yunjuji\Generator\Generators;

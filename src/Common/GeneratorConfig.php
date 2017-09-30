@@ -211,7 +211,7 @@ class GeneratorConfig
 
             $this->pathApiRequest = $generatePath . '/' . 'app/' . 'Http/Requests/API/' . $prefix;
 
-            $this->pathApiRoutes = $generatePath . '/' . 'app/' . 'Http/api_routes.php';
+            $this->pathApiRoutes = $generatePath . '/' . 'routes/api.php';
 
             $this->pathApiTests = $generatePath . '/' . 'tests/';
 
@@ -221,7 +221,7 @@ class GeneratorConfig
 
             $this->pathRequest = $generatePath . '/' . 'app/' . 'Http/Requests/' . $prefix;
 
-            $this->pathRoutes = $generatePath . '/' . 'routes';
+            $this->pathRoutes = $generatePath . '/' . 'routes/web.php';
 
             $this->pathViews = $generatePath . '/' . 'resources/views/' . $viewPrefix . $this->mSnakePlural . '/';
 
