@@ -198,30 +198,30 @@ class GeneratorConfig
          */
         if (!empty($commandData->getOption('generatePath'))) {
             $generatePath = $commandData->getOption('generatePath');
-            $this->pathRepository = $generatePath . '/' . 'app' . '/Repositories/' . $prefix;
+            $this->pathRepository = $generatePath . '/' . 'app/' . 'Repositories/' . $prefix;
 
-            $this->pathModel = $generatePath . '/' . 'app' . 'Models/' . $prefix;
+            $this->pathModel = $generatePath . '/' . 'app/' . 'Models/' . $prefix;
             // if (config('infyom.laravel_generator.ignore_model_prefix', false)) {
             //     $this->pathModel = config('infyom.laravel_generator.path.model', app_path('Models/'));
             // }
 
-            $this->pathDataTables = $generatePath . '/' . 'app' . 'DataTables/' . $prefix;
+            $this->pathDataTables = $generatePath . '/' . 'app/' . 'DataTables/' . $prefix;
 
-            $this->pathApiController = $generatePath . '/' . 'app' . 'Http/Controllers/API/' . $prefix;
+            $this->pathApiController = $generatePath . '/' . 'app/' . 'Http/Controllers/API/' . $prefix;
 
-            $this->pathApiRequest = $generatePath . '/' . 'app' . 'Http/Requests/API/' . $prefix;
+            $this->pathApiRequest = $generatePath . '/' . 'app/' . 'Http/Requests/API/' . $prefix;
 
-            $this->pathApiRoutes = $generatePath . '/' . 'app' . 'Http/api_routes.php';
+            $this->pathApiRoutes = $generatePath . '/' . 'app/' . 'Http/api_routes.php';
 
             $this->pathApiTests = $generatePath . '/' . 'tests/';
 
             $this->pathApiTestTraits = $generatePath . '/' . 'tests/traits/';
 
-            $this->pathController = $generatePath . '/' . 'app' . 'Http/Controllers/' . $prefix;
+            $this->pathController = $generatePath . '/' . 'app/' . 'Http/Controllers/' . $prefix;
 
-            $this->pathRequest = $generatePath . '/' . 'app' . 'Http/Requests/' . $prefix;
+            $this->pathRequest = $generatePath . '/' . 'app/' . 'Http/Requests/' . $prefix;
 
-            $this->pathRoutes = $generatePath . '/' . 'app' . 'Http/routes.php';
+            $this->pathRoutes = $generatePath . '/' . 'app/' . 'Http/routes.php';
 
             $this->pathViews = $generatePath . '/' . 'resources/views/' . $viewPrefix . $this->mSnakePlural . '/';
 
