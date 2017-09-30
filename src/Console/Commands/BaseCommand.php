@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-15 14:17:11
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-30 17:22:30
+ * @Last Modified time: 2017-09-30 21:24:17
  */
 
 namespace Yunjuji\Generator\Console\Commands;
@@ -14,7 +14,6 @@ use InfyOm\Generator\Generators\API\APIControllerGenerator;
 use InfyOm\Generator\Generators\API\APIRequestGenerator;
 use InfyOm\Generator\Generators\API\APIRoutesGenerator;
 use InfyOm\Generator\Generators\API\APITestGenerator;
-use InfyOm\Generator\Generators\RepositoryGenerator;
 use InfyOm\Generator\Generators\RepositoryTestGenerator;
 use InfyOm\Generator\Generators\TestTraitGenerator;
 use InfyOm\Generator\Utils\FileUtil;
@@ -26,6 +25,7 @@ use Yunjuji\Generator\Generators\Scaffold\RequestGenerator;
 use Yunjuji\Generator\Generators\Scaffold\RoutesGenerator;
 use Yunjuji\Generator\Generators\ModelGenerator;
 use Yunjuji\Generator\Generators\MigrationGenerator;
+use Yunjuji\Generator\Generators\RepositoryGenerator;
 
 class BaseCommand extends LaravelGeneratorBaseCommand
 {
