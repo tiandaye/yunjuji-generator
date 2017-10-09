@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-29 09:44:54
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-30 18:48:38
+ * @Last Modified time: 2017-10-09 17:34:26
  */
 
 namespace Yunjuji\Generator\Console\Commands\Scaffold;
@@ -100,6 +100,7 @@ class GenerateCommand extends Command
         if (is_array($fullMigratePath)) {
             // 命令执行结果
             $commandResult = [];
+            $menus = [];
             foreach ($fullMigratePath as $pathKey => $pathValue) {
                 $migrateFileDir = dirname($pathValue);
                 // 查找此目录下的prefix.json
@@ -112,8 +113,13 @@ class GenerateCommand extends Command
                 $modelName = $arrDescription['model_name'];
                 // --prefix
                 $prefixName     = $arrDescription['prefix_name'];
+                // 中文名
+                $title = $modelName;
+                if (isset($arrDescription['title'])) {
+                    $title = $arrDescription['title'];
+                }
                 $artisanCommand = "php artisan yunjuji:scaffold $modelName --fieldsFile=$pathValue --datatables=true --formMode=laravel-admin --prefix=$prefixName";
-                // 生成指定的路径
+                // 生成到指定的路径
                 if (!empty($generatePath)) {
                     $artisanCommand .= " --generatePath=$generatePath";
                 }
@@ -128,7 +134,19 @@ class GenerateCommand extends Command
                     $artisanCommand .= " --namespaceModelMappingFile=$namespaceModelMappingFilePath";
                 }
                 $commandResult[] = passthru("echo no|$artisanCommand", $result);
+
+                // 生成菜单
+                $aRoutePrefix = explode('\\', $prefixName);
+                $aRoutePrefix = array_map(function ($val) {
+                    // 转下划线命名法
+                    return snake_case($val);
+                }, $aRoutePrefix);
+                $url = str_replace('.', '/', implode('/', $aRoutePrefix)) . '/' . snake_case(str_plural($modelName));
+                $menus[] = ['name' => $title, 'url' => $url];
             }
+            // 生成的路由菜单
+            file_put_contents($generatePath . '/menu.json', json_encode($menus));
+
             return $commandResult;
         }
     }

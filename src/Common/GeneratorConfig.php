@@ -373,7 +373,7 @@ class GeneratorConfig
          * tian add start
          */
         // 控制是否显示过滤区域的
-        $commandData->addDynamicVariable('$FILTER_AREA_DISPLAY$', 'false');
+        // $commandData->addDynamicVariable('$FILTER_AREA_DISPLAY$', 'false');
         /**
          * tian add end
          */
