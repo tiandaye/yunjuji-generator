@@ -56,11 +56,13 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
 - 参数说明
 	- model_name:模型名(首字母大写)
 	- perfix_name:目录结构
+	- title:模型的中文名
 - 例子
 ```
 {
 	"model_name": "Vseriali",
-	"prefix_name":"Entity\\Asset\\Video"
+	"prefix_name":"Entity\\Asset\\Video",
+	"title": "分集"
 }
 ```
 ### 过滤字段json文件
