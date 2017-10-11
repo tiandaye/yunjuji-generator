@@ -546,7 +546,12 @@ class ControllerGenerator extends BaseGenerator
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
-        FileUtil::createFile($this->path, $this->fileName, $templateData);
+        // `linux` 和 `win` 有区别
+        if (DIRECTORY_SEPARATOR != '\\') {
+            FileUtil::createFile(str_replace('\\', DIRECTORY_SEPARATOR, $this->path), $this->fileName, $templateData);
+        } else {
+            FileUtil::createFile($this->path, $this->fileName, $templateData);
+        }
 
         $this->commandData->commandComment("\nController created: ");
         $this->commandData->commandInfo($this->fileName);

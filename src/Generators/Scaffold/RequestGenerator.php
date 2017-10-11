@@ -166,7 +166,12 @@ class RequestGenerator extends BaseGenerator
         $templateData = str_replace('$CREATE_RULES$', implode(',' . infy_nl_tab(1, 2), $this->generateCreateRules()), $templateData);
         $templateData = str_replace('$UPDATE_RULES$', implode(',' . infy_nl_tab(1, 2), $this->generateUpdateRules()), $templateData);
 
-        FileUtil::createFile($this->path, $this->requestFileName, $templateData);
+        // `linux` 和 `win` 有区别
+        if (DIRECTORY_SEPARATOR != '\\') {
+            FileUtil::createFile(str_replace('\\', DIRECTORY_SEPARATOR, $this->path), $this->requestFileName, $templateData);
+        } else {
+            FileUtil::createFile($this->path, $this->requestFileName, $templateData);
+        }
 
         $this->commandData->commandComment("\nRequest created: ");
         $this->commandData->commandInfo($this->requestFileName);

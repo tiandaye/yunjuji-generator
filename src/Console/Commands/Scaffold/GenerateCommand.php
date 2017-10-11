@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-29 09:44:54
  * @Last Modified by:   admin
- * @Last Modified time: 2017-10-09 17:34:26
+ * @Last Modified time: 2017-10-11 14:42:36
  */
 
 namespace Yunjuji\Generator\Console\Commands\Scaffold;
@@ -28,12 +28,25 @@ class GenerateCommand extends Command
     protected $description = 'Command description';
 
     /**
+     * The php command
+     *
+     * @var string
+     */
+    protected $phpCommand = 'php';
+
+    /**
      * Create a new command instance.
      *
      * @return void
      */
     public function __construct()
     {
+        if (config('yunjuji.generate.command.php_command')) {
+            $this->phpCommand = config('yunjuji.generate.command.php_command');
+        }
+        if (config('custom.base.command.php_command')) {
+            $this->phpCommand = config('custom.base.command.php_command');
+        }
         parent::__construct();
     }
 
@@ -113,12 +126,15 @@ class GenerateCommand extends Command
                 $modelName = $arrDescription['model_name'];
                 // --prefix
                 $prefixName     = $arrDescription['prefix_name'];
+                if (DIRECTORY_SEPARATOR != '\\') {
+                    $prefixName = str_replace("\\", "\\\\", $prefixName);
+                }
                 // 中文名
                 $title = $modelName;
                 if (isset($arrDescription['title'])) {
                     $title = $arrDescription['title'];
                 }
-                $artisanCommand = "php artisan yunjuji:scaffold $modelName --fieldsFile=$pathValue --datatables=true --formMode=laravel-admin --prefix=$prefixName";
+                $artisanCommand = "{$this->phpCommand} artisan yunjuji:scaffold $modelName --fieldsFile=$pathValue --datatables=true --formMode=laravel-admin --prefix=$prefixName";
                 // 生成到指定的路径
                 if (!empty($generatePath)) {
                     $artisanCommand .= " --generatePath=$generatePath";
@@ -136,7 +152,14 @@ class GenerateCommand extends Command
                 $commandResult[] = passthru("echo no|$artisanCommand", $result);
 
                 // 生成菜单
-                $aRoutePrefix = explode('\\', $prefixName);
+                // $aRoutePrefix = explode('\\', $prefixName);
+                // 生成菜单
+                if (DIRECTORY_SEPARATOR != '\\') {
+                    $aRoutePrefix = explode('\\\\', $prefixName);
+                } else {
+                    $aRoutePrefix = explode('\\', $prefixName);
+                }
+
                 $aRoutePrefix = array_map(function ($val) {
                     // 转下划线命名法
                     return snake_case($val);

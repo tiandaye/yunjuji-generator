@@ -95,8 +95,13 @@ class RoutesGenerator
         // 【在web目录下创建相应的路由文件】
         $routePath           = dirname($this->path);
         $this->routeContents = "<?php\n\n" . $this->routesTemplate;
-        // mNam是全大写, mSnakePlural蛇形有s
-        FileUtil::createFile($routePath . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . $this->commandData->config->prefixes['route'] . DIRECTORY_SEPARATOR, $this->commandData->config->mSnakePlural . '.php', $this->routeContents);
+        // `linux` 和 `win` 有区别
+        if (DIRECTORY_SEPARATOR != '\\') {
+            FileUtil::createFile($routePath . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $this->commandData->config->prefixes['route']) . DIRECTORY_SEPARATOR, $this->commandData->config->mSnakePlural . '.php', $this->routeContents);
+        } else {
+            // mNam是全大写, mSnakePlural蛇形有s
+            FileUtil::createFile($routePath . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR . $this->commandData->config->prefixes['route'] . DIRECTORY_SEPARATOR, $this->commandData->config->mSnakePlural . '.php', $this->routeContents);
+        }
         /**
          * tian add end
          */

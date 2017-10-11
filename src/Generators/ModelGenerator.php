@@ -46,7 +46,12 @@ class ModelGenerator extends BaseGenerator
 
         $templateData = $this->fillTemplate($templateData);
 
-        FileUtil::createFile($this->path, $this->fileName, $templateData);
+        // `linux` 和 `win` 有区别
+        if (DIRECTORY_SEPARATOR != '\\') {
+            FileUtil::createFile(str_replace('\\', DIRECTORY_SEPARATOR, $this->path), $this->fileName, $templateData);
+        } else {
+            FileUtil::createFile($this->path, $this->fileName, $templateData);
+        }
 
         $this->commandData->commandComment("\nModel created: ");
         $this->commandData->commandInfo($this->fileName);

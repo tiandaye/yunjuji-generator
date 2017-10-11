@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-30 21:08:55
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-30 21:15:32
+ * @Last Modified time: 2017-10-10 17:22:35
  */
 
 namespace Yunjuji\Generator\Generators;
@@ -125,7 +125,12 @@ class RepositoryGenerator extends BaseGenerator
 
         $templateData = str_replace('$DOCS$', $docsTemplate, $templateData);
 
-        FileUtil::createFile($this->path, $this->fileName, $templateData);
+        // `linux` 和 `win` 有区别
+        if (DIRECTORY_SEPARATOR != '\\') {
+            FileUtil::createFile(str_replace('\\', DIRECTORY_SEPARATOR, $this->path), $this->fileName, $templateData);
+        } else {
+            FileUtil::createFile($this->path, $this->fileName, $templateData);
+        }
 
         $this->commandData->commandComment("\nRepository created: ");
         $this->commandData->commandInfo($this->fileName);
