@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-15 14:17:11
  * @Last Modified by:   admin
- * @Last Modified time: 2017-09-30 21:24:17
+ * @Last Modified time: 2017-10-12 11:06:03
  */
 
 namespace Yunjuji\Generator\Console\Commands;
@@ -294,6 +294,8 @@ class BaseCommand extends LaravelGeneratorBaseCommand
             ['namespaceModelMappingFile', null, InputOption::VALUE_REQUIRED, 'Model Namespace Mapping input as json file'],
             // 生成的路径
             ['generatePath', null, InputOption::VALUE_REQUIRED, 'generate path'],
+            // 生成 `migrate` 时, 判断是新增还是修改 `表字段`, 如果这个选项有值说明是修改, 值就是修改的次数
+            ['migrateBatch', null, InputOption::VALUE_REQUIRED, 'migration batch'],
             /**
              * tian add end
              */

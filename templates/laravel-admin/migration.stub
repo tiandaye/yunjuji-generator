@@ -25,6 +25,6 @@ class Create$MODEL_NAME_PLURAL$Table extends Migration
      */
     public function down()
     {
-        Schema::drop('$TABLE_NAME$');
+        Schema::dropIfExists('$TABLE_NAME$');
     }
 }

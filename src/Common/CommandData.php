@@ -60,6 +60,27 @@ class CommandData extends LaravelGeneratorCommandData
     public $hasMhmRelationFields = [];
     // mhtm关系的字段 @var $hasMhtmRelationFields[]
     public $hasMhtmRelationFields = [];
+
+    /**
+     * tian add
+     * [$baseTemplateType 基本的模板类型]
+     * @var [type]
+     */
+    private $baseTemplateType;
+
+    /**
+     * tian add
+     * [$formMode form的模式]
+     * @var [type]
+     */
+    private $formMode = '';
+
+    /**
+     * tian add
+     * [$formModePrefix description]
+     * @var [type]
+     */
+    private $formModePrefix = '';
     /**
      * tian add end
      */
@@ -303,6 +324,19 @@ class CommandData extends LaravelGeneratorCommandData
      */
     private function getInputFromFileOrJson()
     {
+        /**
+         * tian add start
+         */
+        // 选择的模板
+        $this->baseTemplateType = config('yunjuji.generator.templates.base', 'yunjuji-generator');
+        if ($this->getOption('formMode')) {
+            $this->formMode       = $this->getOption('formMode');
+            $this->formModePrefix = $this->formMode . '.';
+        }
+        /**
+         * tian add end
+         */
+
         // fieldsFile option will get high priority than json option if both options are passed
         try {
             if ($this->getOption('fieldsFile')) {
@@ -354,11 +388,15 @@ class CommandData extends LaravelGeneratorCommandData
                             $tempRelation                 = GeneratorFieldRelation::parseRelation($field['relation']);
                             $this->relations[]            = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'inForm' => $tempField->inForm, 'inIndex' => $tempField->inIndex, 'label' => $tempField->label, 'title' => $tempField->title, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
 
                             // `多对多关联` 产生 `中间表` 的 `migrate`
                             $templateData = get_template('migration', 'laravel-generator');
-                            // $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+                            $templateData = yunjuji_get_template($this->formModePrefix . 'migration.middle_table', $this->baseTemplateType);
+                            $migrateBatch = '';
+                            if ($this->getOption('migrateBatch')) {
+                                $migrateBatch = $this->getOption('migrateBatch');
+                            }
                             $fields = [];
                             // $fields[] = '$table->increments(\'id\', 10)->unsigned();';
                             // $fields[] = '$table->integer(\'' . $tempInputs[3] . '\', 10)->unsigned();';
@@ -368,11 +406,14 @@ class CommandData extends LaravelGeneratorCommandData
                             $fields[] = '$table->integer(\'' . $tempInputs[4] . '\');';
                             // $fields[] = '$table->timestamps();';
                             $tableName = $tempInputs[2];
-                            $templateData = str_replace('$MODEL_NAME_PLURAL$', studly_case($tableName), $templateData);
+                            $templateData = str_replace('$MODEL_NAME_PLURAL$', studly_case($tableName).$migrateBatch, $templateData);
                             $templateData = str_replace('$TABLE_NAME$', $tableName, $templateData);
-                            $templateData = str_replace('$FIELDS$', implode(yunjuji_nl_tab(1, 3), $fields), $templateData);
-                            $fileName = date('Y_m_d_His').'_'.'create_'.$tableName.'_table.php';
+                            $templateData = str_replace('$FIELDS$', implode(yunjuji_nl_tab(1, 4), $fields), $templateData);
+                            $fileName = date('Y_m_d_His').'_'.'create_'.$tableName.$migrateBatch.'_table.php';
                             $path = config('infyom.laravel_generator.path.migration', base_path('database/migrations/'));
+                            if ($generatePath = $this->getOption('generatePath')) {
+                                $path = $generatePath . '/' . 'database/migrations/';
+                            }
                             FileUtil::createFile($path, $fileName, $templateData);
                         } else if ($tempInputs[0] == 'hmt') {
                             // 用中间表表名当字段名
@@ -385,7 +426,7 @@ class CommandData extends LaravelGeneratorCommandData
                             $tempRelation                 = GeneratorFieldRelation::parseRelation($field['relation']);
                             $this->relations[]            = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'inForm' => $tempField->inForm, 'inIndex' => $tempField->inIndex, 'label' => $tempField->label, 'title' => $tempField->title, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
                         } else if ($tempInputs[0] == 'mhm') {
                             // 用中间表表名当字段名
                             $field['name'] = $tempInputs[1];
@@ -397,7 +438,7 @@ class CommandData extends LaravelGeneratorCommandData
                             $tempRelation                 = GeneratorFieldRelation::parseRelation($field['relation']);
                             $this->relations[]            = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'inForm' => $tempField->inForm, 'inIndex' => $tempField->inIndex, 'label' => $tempField->label, 'title' => $tempField->title, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
                         } else if ($tempInputs[0] == 'mhtm') {
                             // 用中间表表名当字段名
                             $field['name'] = $tempInputs[1];
@@ -409,7 +450,7 @@ class CommandData extends LaravelGeneratorCommandData
                             $tempRelation                  = GeneratorFieldRelation::parseRelation($field['relation']);
                             $this->relations[]             = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'inForm' => $tempField->inForm, 'inIndex' => $tempField->inIndex, 'label' => $tempField->label, 'title' => $tempField->title, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
                         } else {
                             $this->relations[] = GeneratorFieldRelation::parseRelation($field['relation']);
                         }
@@ -437,7 +478,7 @@ class CommandData extends LaravelGeneratorCommandData
                             $tempRelation      = GeneratorFieldRelation::parseRelation($field['relation']);
                             $this->relations[] = $tempRelation;
                             // 给hasRelationFields进行赋值
-                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
+                            $this->hasRelationFields[$tempField->name] = array('name' => $tempField->name, 'inForm' => $tempField->inForm, 'inIndex' => $tempField->inIndex, 'label' => $tempField->label, 'title' => $tempField->title, 'htmlType' => $tempField->htmlType, 'htmlValues' => $tempField->htmlValues, 'displayField' => $tempField->displayField, 'type' => $tempRelation->type, 'inputs' => $tempRelation->inputs, 'number' => count($this->relations) - 1);
                         }
                         /**
                          * tian end

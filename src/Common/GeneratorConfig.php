@@ -75,6 +75,8 @@ class GeneratorConfig
         'namespaceModelMappingFile',
         // 生成的路径
         'generatePath',
+        // 生成 `migrate` 时, 判断是新增还是修改 `表字段`, 如果这个选项有值说明是修改, 值就是修改的次数
+        'migrateBatch',
         /**
          * tian add end
          */

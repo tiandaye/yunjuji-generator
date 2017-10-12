@@ -493,6 +493,7 @@ class ControllerGenerator extends BaseGenerator
                                             $options = var_export($field->options['options'], true);
                                         }
                                         $strFilterGetOptions = '$options = '.$options;
+                                        $strFilterGetOptions .= ';';
                                         if ($filterName) {
                                             $strLaravelAdminFilterFieldList .= yunjuji_tab(4*4) . $strFilterGetOptions;
                                             $strLaravelAdminFilterFieldList .= yunjuji_tab(4*4) . '$filter->' . $filterOperator . '(\'' . $filterName . '\', \''. $filterLabel . '\')';

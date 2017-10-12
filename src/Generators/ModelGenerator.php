@@ -46,7 +46,7 @@ class ModelGenerator extends BaseGenerator
 
         $templateData = $this->fillTemplate($templateData);
 
-        // `linux` ºÍ `win` ÓÐÇø±ð
+        // `linux` å’Œ `win` æœ‰åŒºåˆ«
         if (DIRECTORY_SEPARATOR != '\\') {
             FileUtil::createFile(str_replace('\\', DIRECTORY_SEPARATOR, $this->path), $this->fileName, $templateData);
         } else {

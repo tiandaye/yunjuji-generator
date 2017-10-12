@@ -1,0 +1,5 @@
+	if (Schema::hasColumn('$TABLE_NAME$', '$FIELD_NAME$')) {
+					$FIELD_EXIST$
+				} else {
+					$FIELD_NOET_EXIST$
+				}
