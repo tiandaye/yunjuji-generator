@@ -18,7 +18,9 @@ class Update$MODEL_NAME_PLURAL$$MIGRATE_BATCH$Table extends Migration
                 $UPDATE_FIELDS$
             });
         } else {
-            $FIELDS$
+            Schema::create('$TABLE_NAME$', function (Blueprint $table) {
+                $FIELDS$
+            });
         }
     }
 

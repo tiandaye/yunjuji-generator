@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-29 09:41:05
  * @Last Modified by:   admin
- * @Last Modified time: 2017-10-11 15:30:58
+ * @Last Modified time: 2017-10-12 21:33:56
  */
 
 namespace Yunjuji\Generator\Console\Commands\Scaffold;
@@ -532,12 +532,35 @@ class GenerateFieldJsonCommand extends Command
                     }
                     // var_dump($relations);
 
+                    // 有多对多关联关系的字段名
+                    $hasM2MRelationFileds = [];
+
+                    // 遍历 `tags` 关系
+                    foreach ($tags as $tag_key => $tag_value) {
+                        $tempArr = explode(',', $tag_value);
+                        if ($tempArr[0] == 'm2m' || $tempArr[0] == 'mtm') {
+                            $hasM2MRelationFileds[strtolower($tempArr[1])]          = ['type' =>'relation', 'relation' => $tag_value];
+                        }
+                    }
+                    // 遍历关联关系
+                    foreach ($relations as $relation_key => $relation_value) {
+                        $tempArr = explode(',', $relation_value);
+                        if ($tempArr[0] == 'm2m' || $tempArr[0] == 'mtm') {
+                            $hasM2MRelationFileds[strtolower($tempArr[1])]          = ['type' =>'relation', 'relation' => $relation_value];
+                        }
+                    }
+
                     $fieldJson = [];
                     // id字段
                     $fieldJson[] = ["name" => "id", "dbType" => "increments", "htmlType" => "", "validations" => "", "searchable" => false, "fillable" => false, "primary" => true, "inForm" => false, "inIndex" => false];
                     // 吐出json文件, 字段和关联关系分开
                     foreach ($fields as $field_key => $field_value) {
                         $field = [];
+                        $flag = false;
+                        // 判断是不是 `多对多关联关系` 的字段
+                        if (isset($hasM2MRelationFileds[strtolower($field_key)])) {
+                            $flag = true;
+                        }
                         // name, label, title属性
                         $field["name"]  = $field_key;
                         $field["label"] = $field_value['label'];
@@ -598,22 +621,42 @@ class GenerateFieldJsonCommand extends Command
                         if (array_key_exists($field_key, $options)) {
                             $field['options'] = $options[$field_key];
                         }
-                        $fieldJson[] = $field;
+
+                        // 判断是不是 `多对多关联关系` 的字段
+                        if ($flag) {
+                            unset($field['name']);
+                            unset($field['dbType']);
+                            $hasM2MRelationFileds[strtolower($field_key)] = array_merge($hasM2MRelationFileds[strtolower($field_key)], $field);
+                        } else {
+                            $fieldJson[] = $field;
+                        }
                     }
 
                     // 遍历tags关系
                     foreach ($tags as $tag_key => $tag_value) {
-                        $relation             = [];
-                        $relation['type']     = 'relation';
-                        $relation['relation'] = $tag_value;
-                        $fieldJson[]          = $relation;
+                        $tempArr = explode(',', $tag_value);
+                        // 处理多对多关联关系
+                        if (isset($hasM2MRelationFileds[strtolower($tempArr[1])])) {
+                            $fieldJson[] = $hasM2MRelationFileds[strtolower($tempArr[1])];
+                        } else {
+                            $relation             = [];
+                            $relation['type']     = 'relation';
+                            $relation['relation'] = $tag_value;
+                            $fieldJson[]          = $relation;
+                        }
                     }
                     // 遍历关联关系
                     foreach ($relations as $relation_key => $relation_value) {
-                        $relation             = [];
-                        $relation['type']     = 'relation';
-                        $relation['relation'] = $relation_value;
-                        $fieldJson[]          = $relation;
+                        $tempArr = explode(',', $relation_value);
+                        // 处理多对多关联关系
+                        if (isset($hasM2MRelationFileds[strtolower($tempArr[1])])) {
+                            $fieldJson[] = $hasM2MRelationFileds[strtolower($tempArr[1])];
+                        } else {
+                            $relation             = [];
+                            $relation['type']     = 'relation';
+                            $relation['relation'] = $relation_value;
+                            $fieldJson[]          = $relation;
+                        }
                     }
 
                     // 新建, 修改字段

@@ -548,7 +548,7 @@ class CommandData extends LaravelGeneratorCommandData
 
     /**
      * tian custom function
-     * [getNamespaceModelMapping 【获得过滤字段】]
+     * [getNamespaceModelMapping 【获得命名空间】]
      * @return [type] [description]
      */
     public function getNamespaceModelMapping()

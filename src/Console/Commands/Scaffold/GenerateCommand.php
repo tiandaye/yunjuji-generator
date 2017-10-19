@@ -4,7 +4,7 @@
  * @Author: admin
  * @Date:   2017-09-29 09:44:54
  * @Last Modified by:   admin
- * @Last Modified time: 2017-10-11 14:42:36
+ * @Last Modified time: 2017-10-12 23:06:17
  */
 
 namespace Yunjuji\Generator\Console\Commands\Scaffold;
@@ -18,7 +18,7 @@ class GenerateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'yunjuji:generate {path} {generatePath?}';
+    protected $signature = 'yunjuji:generate {path} {generatePath?} {migrateBatch?}';
 
     /**
      * The console command description.
@@ -59,13 +59,15 @@ class GenerateCommand extends Command
     {
         // 获取要遍历的路径
         $path = $this->argument('path');
-        // 生成的路径
-        $generatePath = $this->argument('generatePath');
         $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
         // 获取全部的要模型json文件
         $fullMigratePath = $this->getFilePath($path, 'fields.json');
+        // 生成的路径
+        $generatePath = $this->argument('generatePath');
+        // `migrate` 的次数
+        $migrateBatch =  $this->argument('migrateBatch');
         // 批量执行命令
-        $result = $this->generateCommand($fullMigratePath, $path, $generatePath);
+        $result = $this->generateCommand($fullMigratePath, $path, $generatePath, $migrateBatch);
     }
 
     /**
@@ -108,7 +110,7 @@ class GenerateCommand extends Command
      * @param  string $path [description]
      * @return [type]       [description]
      */
-    protected function generateCommand($fullMigratePath, $path, $generatePath = '')
+    protected function generateCommand($fullMigratePath, $path, $generatePath = '', $migrateBatch = '')
     {
         if (is_array($fullMigratePath)) {
             // 命令执行结果
@@ -135,6 +137,10 @@ class GenerateCommand extends Command
                     $title = $arrDescription['title'];
                 }
                 $artisanCommand = "{$this->phpCommand} artisan yunjuji:scaffold $modelName --fieldsFile=$pathValue --datatables=true --formMode=laravel-admin --prefix=$prefixName";
+                // `migrate` 的次数
+                if (!empty($migrateBatch)) {
+                    $artisanCommand .= " --migrateBatch=$migrateBatch";
+                }
                 // 生成到指定的路径
                 if (!empty($generatePath)) {
                     $artisanCommand .= " --generatePath=$generatePath";
@@ -145,7 +151,8 @@ class GenerateCommand extends Command
                     $artisanCommand .= " --filterFieldsFile=$filterFilePath";
                 }
                 // 如果存在 `命名空间映射` json
-                $namespaceModelMappingFilePath = $path . '/namespace_model_mapping.json';;
+                // $namespaceModelMappingFilePath = $path . '/namespace_model_mapping.json';
+                $namespaceModelMappingFilePath = $migrateFileDir . '/namespace_model_mapping.json';
                 if (file_exists($namespaceModelMappingFilePath)) {
                     $artisanCommand .= " --namespaceModelMappingFile=$namespaceModelMappingFilePath";
                 }
