@@ -535,7 +535,7 @@ class ControllerGenerator extends BaseGenerator
                 }
 
                 // 替换 `模型命名空间`
-                $templateData = str_replace('$USE_NAMESPACE_MODEL_LIST$', implode('\n', $aNamespaceModelList), $templateData);
+                $templateData = str_replace('$USE_NAMESPACE_MODEL_LIST$', implode(yunjuji_nl(), $aNamespaceModelList), $templateData);
                 /**
                  * namespace end
                  */
