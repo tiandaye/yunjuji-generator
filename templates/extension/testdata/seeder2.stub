@@ -1,0 +1,23 @@
+<?php
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class $ASOC_MODEL_NAME$TableSeeder extends Seeder
+{
+    public function run()
+    {
+        $idsSelf  = App\Models\$NAMESPACE$\$UPPER_CAMEL_MODEL_NAME_SELF$::pluck('id');
+        $idsOther = $UPPER_CAMEL_MODEL_NAME_OTHER_ALL_PATH$::pluck('id');
+        $datas = [];
+        while ($idsSelf->first() && $idsOther->first()) {
+            $data = [];
+            $data['$ASOC_FIELD_SELF$'] = $idsSelf->shift();
+            for ($i = 0; $i < 10; $i++) {
+                $data['$ASOC_FIELD_OTHER$'] = $idsOther->random();
+                $datas[] = $data;
+            }
+        }
+        DB::table(snake_case('$ASOC_MODEL_NAME$'))->insert($datas);
+    }
+}

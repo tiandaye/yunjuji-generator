@@ -1,0 +1,2 @@
+            // 删除当前模型所有的标签
+             $$MODEL_NAME_CAMEL$->untag();

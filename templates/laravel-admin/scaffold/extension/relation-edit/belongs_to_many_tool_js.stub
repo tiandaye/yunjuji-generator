@@ -1,0 +1,32 @@
+/**
+* 自定义批量操作工具里面的js函数
+*/
+function $MODEL_NAME_CAMEL$Select$RELATION_NAME$(url, ids) {
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: {
+            movie_id: $('#$MODEL_NAME_MIDDLE$s-select-$RELATION_NAME_MIDDLE$').val(),
+            $MODEL_NAME_SNAKE$_ids: ids,
+            _token: LA.token,
+        },
+        success: function(data) {
+            if (data.status) {
+                layer.alert(data.content, {
+                    icon: 6
+                });
+                $RELATION_NAME_CAMEL$ActorTable.draw();
+                $RELATION_NAME_CAMEL$ActorSelectedTable.draw();
+            } else {
+                layer.msg(data.content, {
+                    icon: 5
+                });
+            }
+        },
+        error: function() {
+            layer.msg("异常！");
+        }
+    });
+}
+
+

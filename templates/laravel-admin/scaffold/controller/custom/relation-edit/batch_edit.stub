@@ -1,0 +1,2 @@
+                    // 批量编辑按钮
+                    $batch->add('批量编辑', new \App\Admin\Extensions\Tools\$PATH_PREFIX$$MODEL_NAME$\BelongTo$RELATION_NAME$s());

@@ -1,1 +1,1 @@
-            $grid->column('$FIELD_NAME$', '$FIELD_TITLE$')->sortable();
+            $grid->column('$FIELD_NAME$', '$FIELD_TITLE$')$IS_DISPLAY_LABEL$->sortable()$IS_ROW_EDIT$;

@@ -1,0 +1,13 @@
+<?php
+
+use Illuminate\Database\Seeder;
+
+class $UPPER_CAMEL_MODEL_NAME_SELF$sTableSeeder extends Seeder
+{
+    public function run()
+    {
+        $datas = factory(App\Models\$NAMESPACE$\$UPPER_CAMEL_MODEL_NAME_SELF$::class, $MODEL_NUM$)->make();
+        App\Models\$NAMESPACE$\$UPPER_CAMEL_MODEL_NAME_SELF$::insert($datas->toArray());
+    }
+}
+

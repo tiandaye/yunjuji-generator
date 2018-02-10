@@ -1,0 +1,63 @@
+
+        // 如果删除原图
+        if (array_key_exists('_file_del_', $input)) {
+            $imgUrl = $$MODEL_NAME_CAMEL$->$IMAGE_COLUMN$;
+            // 根据配置得到根路径
+            $rootDir  = "$ROOT_DIR$";
+            if(!$rootDir) {
+                $rootDir  = config('filesystems.disks.admin.root');
+            }
+            $fullPath = $rootDir . $imgUrl;
+            @unlink($fullPath);
+            $$MODEL_NAME_CAMEL$->$IMAGE_COLUMN$ = null;
+            $$MODEL_NAME_CAMEL$->save();
+            return response()->json(['message' => '删除成功', 'status' => true]);
+        }
+
+        $sValidators = [
+            $UPDATE_RULES$
+        ];
+
+        $validators = [];
+        
+        // 动态判断校验
+        foreach ($input as $key => $value) {
+            if (isset($sValidators[$key])) {
+                $validators[$key] = $sValidators[$key];
+            }
+        }
+
+        // 定义校验, 没有移到request
+        $validator = Validator::make($request->all(), $validators, [
+            // 'required' => ':attribute 不能为空',
+        ], [
+            // 'name'       => '名称',
+        ]);
+
+        if($validator){
+            // 校验
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }
+        }
+
+        $image = $request->file('$IMAGE_COLUMN$'); //使用laravel 自带的request类来获取一下文件
+        if($image){
+            // 允许上传的图片格式
+            $allowedExtensions = "$ALLOWED_EXTENSIONS$";
+            // 上传图片路径
+            $rootDir      = "$ROOT_DIR$";
+            // 上传大小限制
+            $maxSize = "$MAX_SIZE$";
+            // 缩略图的尺寸
+            $resize = ['width' => "$WIDTH$", 'height' => "$HEIGHT$"];
+            $saveImage = new UploadImage;
+            // 调用图片上传方法
+            $result = $saveImage->uploadImage($image, $rootDir, $allowedExtensions, $maxSize, $resize);
+            if (is_array($result)) {
+                Flash::error($result['error']);
+                return back()->withInput();
+            } else {
+                $input['$IMAGE_COLUMN$'] = '/' . $result;
+            }
+        }

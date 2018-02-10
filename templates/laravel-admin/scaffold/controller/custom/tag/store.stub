@@ -1,0 +1,5 @@
+        $tagName = $request->input('tagName');
+        $tags    = $request->input('tags');
+        array_push($tags, $tagName);
+        $tags        = array_filter($tags);
+        $$MODEL_NAME_CAMEL$->retag($tags);

@@ -1,0 +1,345 @@
+/**
+* 控制器中右边详情按钮点击之后, 里面tab选项卡需要的js函数
+*/
+function $MODEL_NAME_CAMEL$$RELATION_NAME$() {
+    // 防止csrf
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            // 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    // 添加媒资按钮
+    $('#add-$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$').on('click', function() {
+        $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-modal').modal('show');
+    });
+    /**
+     * $RELATION_NAME_SNAKE$
+     */
+    // 媒资-datatables渲染
+    $MODEL_NAME_CAMEL$$RELATION_NAME$Table = $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-table').DataTable({
+        // "processing": true,
+        // 服务器端渲染
+        "serverSide": true,
+        // 请求数据的形式(get, post), 请求的路径
+        ajax: {
+            url: "/admin/$ROUTE_PREFIX$$MODEL_NAME_PLURAL_SNAKE$/$MODEL_NAME_SNAKE$/$RELATION_NAME_SNAKE$/$RELATION_NAME_SNAKE$_data",
+            type: "POST",
+            data: function(d) {
+                //     // 归类
+                //     d.vcat = $('#$MODEL_NAME_CAMEL$$RELATION_NAME$-vcat').val();
+                //     // 分类
+                //     d.vcattag = $('#$MODEL_NAME_CAMEL$$RELATION_NAME$-vcattag').val();
+                //     // 搜索框
+                //     d.search_value = $('#$MODEL_NAME_CAMEL$$RELATION_NAME$-search-value').val();
+                //     // 专辑id
+                d.$MODEL_NAME_SNAKE$_id = $('#$MODEL_NAME_SNAKE$_id').val();
+            },
+            // headers: {
+            //     'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+            // }
+        },
+        columns: [{
+            orderable: false,
+            data: "id",
+            render: function(id) {
+                return '<input type="checkbox" data-id="' + id + '" name="checkbox-$MODEL_NAME_CAMEL$$RELATION_NAME$">'
+            },
+            title: '<input id="$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-check-all" name="" type="checkbox" value=""/>全选/反选',
+            width: "10%"
+        }, {
+            // 列名
+            title: "$RELATION_NAME_SNAKE$ID",
+            // 数据
+            data: "id",
+            // 能否进行排序
+            orderable: true,
+            width: "10%"
+        }, {
+            title: "名称",
+            data: "name",
+            orderable: true,
+            width: "10%"
+        }, {
+            title: "标题",
+            data: "title",
+            orderable: true,
+            width: "10%"
+        }, {
+            title: "简介",
+            data: "short_desc",
+            orderable: true,
+            width: "10%"
+        }, {
+            title: "操作",
+            orderable: false,
+            width: "5%",
+            "render": function(data, type, row, meta) {
+                return "<a class='btn btn-primary btn-xs' href='javascript:void(0);'" + "onclick='_add$MODEL_NAME$$RELATION_NAME$(\"" + row['id'] + "\")'>添加</a>";
+            }
+        }],
+        // 分页类型
+        "pagingType": "full_numbers",
+        "sLoadingRecords": "正在加载数据...",
+        "sZeroRecords": "暂无数据",
+        // 能否进行搜索
+        "searching": false,
+        "order": [
+            [1, "asc"]
+        ],
+        "dom": 'rt<"bottom"iflp<"clear">>',
+        "language": {
+            "processing": "玩命加载中...",
+            "lengthMenu": "显示 _MENU_ 项结果",
+            "zeroRecords": "没有匹配结果",
+            "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+            "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+            "infoFiltered": "(由 _MAX_ 项结果过滤)",
+            "infoPostFix": "",
+            "url": "",
+            "paginate": {
+                "first": "首页",
+                "previous": "上一页",
+                "next": "下一页",
+                "last": "末页"
+            }
+        },
+        _fnPageChange: function() {}
+    });
+    // 使用col插件实现表格头宽度拖拽
+    // $("#$MODEL_NAME_CAMEL$$RELATION_NAME$-table").colResizable();
+    // 全选
+    $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-check-all').on('click', function() {
+        $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-table tr input[type="checkbox"][name="checkbox-$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$"]').each(function() {
+            if ($(this).is(':checked')) {
+                $(this).prop("checked", false);
+            } else {
+                $(this).prop("checked", true);
+            }
+        });
+        // if($(this).is(':checked')) {
+        //     console.log("选中");
+        //     // alert("选中");
+        // } else {
+        //     console.log("取消选中");
+        //     // alert("取消");
+        // }
+    });
+    // 批量添加$RELATION_NAME_SNAKE$
+    $('#batch-add-$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$').on('click', function() {
+        var $MODEL_NAME_SNAKE$_id = $('#$MODEL_NAME_SNAKE$_id').val();
+        var $RELATION_NAME_SNAKE$_id = [];
+        $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-table tr input[type="checkbox"][name="checkbox-$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$"]').each(function() {
+            if ($(this).is(':checked')) {
+                $RELATION_NAME_SNAKE$_id.push($(this).attr("data-id"));
+            }
+        });
+        if ($RELATION_NAME_SNAKE$_id.length < 1) {
+            layer.msg("$RELATION_NAME_SNAKE$不能为空, 请勾选$RELATION_NAME_SNAKE$!", {
+                icon: 5
+            });
+            return false;
+        }
+        // 发送请求
+        $.ajax({
+            url: '/admin/$ROUTE_PREFIX$$MODEL_NAME_PLURAL_SNAKE$/$MODEL_NAME_SNAKE$/$RELATION_NAME_SNAKE$/add_$RELATION_NAME_SNAKE$',
+            type: 'POST',
+            cache: false,
+            dataType: 'json',
+            data: {
+                $MODEL_NAME_SNAKE$_id: $MODEL_NAME_SNAKE$_id,
+                $RELATION_NAME_SNAKE$_id: $RELATION_NAME_SNAKE$_id
+            },
+            success: function(data) {
+                if (data.status) {
+                    layer.alert(data.content, {
+                        icon: 6
+                    });
+                    $MODEL_NAME_CAMEL$$RELATION_NAME$Table.draw();
+                    $MODEL_NAME_CAMEL$$RELATION_NAME$SelectedTable.draw();
+                } else {
+                    layer.msg(data.content, {
+                        icon: 5
+                    });
+                }
+            },
+            error: function() {
+                layer.msg("异常！");
+            }
+        });
+    });
+    // 搜索过滤
+    // $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-search').on('click', function() {
+    //     $MODEL_NAME_CAMEL$$RELATION_NAME$Table.draw();
+    // });
+    // 刷新
+    $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-table-refresh').on('click', function() {
+        // $MODEL_NAME_CAMEL$$RELATION_NAME$Table.draw();
+        $MODEL_NAME_CAMEL$$RELATION_NAME$Table.ajax.reload();
+    });
+    /**
+     * 电影选中的$RELATION_NAME_SNAKE$
+     */
+    // 已选的$RELATION_NAME_SNAKE$数据-datatables渲染
+    $MODEL_NAME_CAMEL$$RELATION_NAME$SelectedTable = $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-selected-table').DataTable({
+        // "processing": true,
+        // 服务器端渲染
+        "serverSide": true,
+        // 请求数据的形式(get, post), 请求的路径
+        ajax: {
+            url: "/admin/$ROUTE_PREFIX$$MODEL_NAME_PLURAL_SNAKE$/$MODEL_NAME_SNAKE$/$RELATION_NAME_SNAKE$/$RELATION_NAME_SNAKE$_selected",
+            type: "POST",
+            data: function(d) {
+                // 专辑id
+                d.$MODEL_NAME_SNAKE$_id = $('#$MODEL_NAME_SNAKE$_id').val();
+            }
+        },
+        columns: [{
+            orderable: false,
+            data: "$RELATION_NAME_SNAKE$.id",
+            render: function(id) {
+                return '<input type="checkbox" data-id="' + id + '" name="checkbox-$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$-selected">'
+            },
+            title: '<input id="$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-selected-check-all" name="" type="checkbox" value=""/>全选/反选',
+            width: "10%"
+        }, {
+            // 列名
+            title: "电影名",
+            // 数据
+            data: "$MODEL_NAME_SNAKE$.name",
+            // 能否进行排序
+            orderable: false,
+            width: "10%"
+        }, {
+            // 列名
+            title: "$RELATION_NAME_SNAKE$ID",
+            // 数据
+            data: "$RELATION_NAME_SNAKE$.id",
+            // 能否进行排序
+            orderable: false,
+            width: "5%"
+        }, {
+            title: "名称",
+            data: "$RELATION_NAME_SNAKE$.name",
+            orderable: false,
+            width: "10%"
+        }, {
+            title: "标题",
+            data: "$RELATION_NAME_SNAKE$.title",
+            orderable: false,
+            width: "10%"
+        }, {
+            title: "简介",
+            data: "$RELATION_NAME_SNAKE$.short_desc",
+            orderable: false,
+            width: "10%"
+        }, {
+            title: "操作",
+            orderable: false,
+            width: "5%",
+            "render": function(data, type, row, meta) {
+                return "<a class='btn btn-danger btn-xs' href='javascript:void(0);'" + "onclick='_delete$MODEL_NAME$$RELATION_NAME$(\"" + row['$RELATION_NAME_SNAKE$']['id'] + "\")'>删除</a>";
+            }
+        }],
+        // 分页类型
+        "pagingType": "full_numbers",
+        "sLoadingRecords": "正在加载数据...",
+        "sZeroRecords": "暂无数据",
+        // 能否进行搜索
+        "searching": false,
+        "order": [
+            // [1, "asc"]
+        ],
+        "dom": 'rt<"bottom"iflp<"clear">>',
+        "language": {
+            "processing": "玩命加载中...",
+            "lengthMenu": "显示 _MENU_ 项结果",
+            "zeroRecords": "没有匹配结果",
+            "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+            "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+            "infoFiltered": "(由 _MAX_ 项结果过滤)",
+            "infoPostFix": "",
+            "url": "",
+            "paginate": {
+                "first": "首页",
+                "previous": "上一页",
+                "next": "下一页",
+                "last": "末页"
+            }
+        },
+        _fnPageChange: function() {}
+    });
+    // 使用col插件实现表格头宽度拖拽
+    $("#$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$-selected-table").colResizable();
+    // 全选
+    $('#$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$-selected-check-all').on('click', function() {
+        $('#$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$-selected-table tr input[type="checkbox"][name="checkbox-$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$-selected"]').each(function() {
+            if ($(this).is(':checked')) {
+                $(this).prop("checked", false);
+            } else {
+                $(this).prop("checked", true);
+            }
+        });
+    });
+    // 批量删除媒资
+    $('#batch-delete-$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$').on('click', function() {
+        var $MODEL_NAME_SNAKE$_id = $('#$MODEL_NAME_SNAKE$_id').val();
+        var $RELATION_NAME_SNAKE$_id = [];
+        $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-selected-table tr input[type="checkbox"][name="checkbox-$MODEL_NAME_MIDDLE$-$RELATION_NAME_MIDDLE$-selected"]').each(function() {
+            if ($(this).is(':checked')) {
+                $RELATION_NAME_SNAKE$_id.push($(this).attr("data-id"));
+            }
+        });
+        if ($RELATION_NAME_SNAKE$_id.length < 1) {
+            layer.msg("$RELATION_NAME_SNAKE$不能为空, 请勾选$RELATION_NAME_SNAKE$!", {
+                icon: 5
+            });
+            return false;
+        }
+        layer.msg('确定要删除?', {
+            time: 0, //不自动关闭,
+            btn: ['确定', '取消'],
+            yes: function(index) {
+                layer.close(index);
+                // 发送请求
+                $.ajax({
+                    url: '/admin/$ROUTE_PREFIX$$MODEL_NAME_PLURAL_SNAKE$/$MODEL_NAME_SNAKE$/$RELATION_NAME_SNAKE$/delete',
+                    type: 'POST',
+                    cache: false,
+                    dataType: 'json',
+                    data: {
+                        $MODEL_NAME_SNAKE$_id: $MODEL_NAME_SNAKE$_id,
+                        $RELATION_NAME_SNAKE$_id: $RELATION_NAME_SNAKE$_id
+                    },
+                    success: function(data) {
+                        if (data.status) {
+                            layer.alert(data.content, {
+                                icon: 6
+                            });
+                            $MODEL_NAME_CAMEL$$RELATION_NAME$Table.draw();
+                            $MODEL_NAME_CAMEL$$RELATION_NAME$SelectedTable.draw();
+                        } else {
+                            layer.msg(data.content, {
+                                icon: 5
+                            });
+                        }
+                    },
+                    error: function() {
+                        layer.msg("异常！");
+                    }
+                });
+            }
+        });
+    });
+    //
+    // // 搜索过滤
+    // $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-selected-search').on('click', function() {
+    //     $MODEL_NAME_CAMEL$$RELATION_NAME$SelectedTable.draw();
+    // });
+    // 刷新
+    $('#$MODEL_NAME_SNAKE$-$RELATION_NAME_MIDDLE$-selected-refresh').on('click', function() {
+        // $MODEL_NAME_CAMEL$$RELATION_NAME$SelectedTable.draw();
+        $MODEL_NAME_CAMEL$$RELATION_NAME$SelectedTable.ajax.reload();
+    });
+}
+

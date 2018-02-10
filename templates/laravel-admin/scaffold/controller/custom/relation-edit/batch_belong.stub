@@ -1,0 +1,2 @@
+                    // 批量归属按钮
+                    $batch->add('批量归属', new \App\Admin\Extensions\Tools\$PATH_PREFIX$$MODEL_NAME$\BelongTo$RELATION_NAME$());

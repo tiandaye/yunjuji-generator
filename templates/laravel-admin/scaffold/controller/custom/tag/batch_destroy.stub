@@ -1,0 +1,4 @@
+  $$MODEL_NAME_CAMEL$s = $$MODEL_NAME$::with('tagged')->whereIn('id', $id)->get();
+            foreach ($$MODEL_NAME_CAMEL$s as $value) {
+                $value->untag();
+            }

@@ -1,0 +1,7 @@
+    public function $RELATION_NAME_CAMEL$Grid($id)
+    {
+        // 只能手动调用下函数
+        // Admin::script('$MODEL_NAME_CAMEL$$RELATION_NAME$();');
+
+        return view('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_DASHED$.$RELATION_NAME_SNAKE$', ['$MODEL_NAME_SNAKE$_id' => $id]);
+    }

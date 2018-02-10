@@ -1,0 +1,5 @@
+            // 页内详情
+            $grid->column('详情')->display(function () {
+                $data['model'] = $this;
+                return view('$DETAIL_VIEW_PATH$', $data)->render();
+            });

@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Yunjuji\Generator\Common\CommandData;
 use Yunjuji\Generator\Generators\Scaffold\ControllerGenerator;
+use Yunjuji\Generator\Generators\Scaffold\RelationEditGenerator;
 use Yunjuji\Generator\Generators\Scaffold\RequestGenerator;
 use Yunjuji\Generator\Generators\Scaffold\RoutesGenerator;
 use Yunjuji\Generator\Generators\ModelGenerator;
@@ -152,6 +153,12 @@ class BaseCommand extends LaravelGeneratorBaseCommand
         if (!$this->isSkip('controllers') and !$this->isSkip('scaffold_controller')) {
             $controllerGenerator = new ControllerGenerator($this->commandData);
             $controllerGenerator->generate();
+        }
+
+        // 关系编辑需要的视图, tools文件
+        if (!$this->isSkip('relation_edit') and !$this->isSkip('scaffold_relation_edits')) {
+            $routeGenerator = new RelationEditGenerator($this->commandData);
+            $routeGenerator->generate();
         }
 
         // 视图
@@ -300,6 +307,14 @@ class BaseCommand extends LaravelGeneratorBaseCommand
              * tian add end
              */
 
+            /**
+             * sun add start
+             */
+            // 生成模型时,判断当前模型是否需要打标签功能
+            ['isTagging', null, InputOption::VALUE_REQUIRED, 'Whether to tagging the current model'],
+            /**
+             * sun add end
+             */
             ['fieldsFile', null, InputOption::VALUE_REQUIRED, 'Fields input as json file'],
             ['jsonFromGUI', null, InputOption::VALUE_REQUIRED, 'Direct Json string while using GUI interface'],
             ['tableName', null, InputOption::VALUE_REQUIRED, 'Table Name'],

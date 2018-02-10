@@ -2,10 +2,12 @@
 
 namespace Yunjuji\Generator\Generators\Scaffold;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InfyOm\Generator\Generators\BaseGenerator;
 use InfyOm\Generator\Utils\FileUtil;
 use Yunjuji\Generator\Common\CommandData;
+use Yunjuji\Generator\Generators\Scaffold\RequestGenerator;
 
 class ControllerGenerator extends BaseGenerator
 {
@@ -175,10 +177,51 @@ class ControllerGenerator extends BaseGenerator
                 // 替换模板
                 $templateData = str_replace('$BACKPACK_FIELD_LIST$', $strBackpackFieldList, $templateData);
             } else if ($this->formMode == 'laravel-admin') {
+                /**
+                 * 获取标签相关模板 start
+                 */
+                $strTagBatchDestoryTempalte = '';
+                $strTagDestoryTempalte      = '';
+                $strTagEditTempalte         = '';
+                $strTagFormTempalte         = '';
+                $strTagGridTempalte         = '';
+                $strTagStoreTempalte        = '';
+                $strTagUpdateTempalte       = '';
+
+                if ($this->commandData->getOption('isTagging')) {
+                    // 获取标签批量删除模板
+                    $strTagBatchDestoryTempalte = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.tag.batch_destroy', $this->baseTemplateType);
+                    // 获取标签删除模板
+                    $strTagDestoryTempalte = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.tag.destroy', $this->baseTemplateType);
+                    // 获取标签编辑模板
+                    $strTagEditTempalte = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.tag.edit', $this->baseTemplateType);
+                    // 获取标签Form模板
+                    $strTagFormTempalte = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.tag.form', $this->baseTemplateType);
+                    // 获取标签Grid模板
+                    $strTagGridTempalte = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.tag.grid', $this->baseTemplateType);
+                    // 获取标签保存模板
+                    $strTagStoreTempalte = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.tag.store', $this->baseTemplateType);
+                    // 获取标签更新文档
+                    $strTagUpdateTempalte = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.tag.update', $this->baseTemplateType);
+                }
+                $templateData = str_replace('$LARAVEL_ADMIN_TAGGING_STORE$', $strTagStoreTempalte, $templateData);
+                $templateData = str_replace('$LARAVEL_ADMIN_TAGGING_EDIT$', $strTagEditTempalte, $templateData);
+                $templateData = str_replace('$LARAVEL_ADMIN_TAGGING_UPDATE$', $strTagUpdateTempalte, $templateData);
+                $templateData = str_replace('$LARAVEL_ADMIN_TAGGING_BATCH_DESTROY$', $strTagBatchDestoryTempalte, $templateData);
+                $templateData = str_replace('$LARAVEL_ADMIN_TAGGING_DESTROY$', $strTagDestoryTempalte, $templateData);
+                $templateData = str_replace('$LARAVEL_ADMIN_TAGGING_FORM$', $strTagFormTempalte, $templateData);
+                $templateData = str_replace('$LARAVEL_ADMIN_TAGGING_GRID$', $strTagGridTempalte, $templateData);
+
+
+                /**
+                 * 获取标签相关模板 end
+                 */
                 // 获取 `grid` 的 `column` 的普通模板
                 $strGridColumnTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.column', $this->baseTemplateType);
                 // 获取 `grid` 的 `mtm column` 的模板
                 $strGridMtmColumnTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.m2m_column', $this->baseTemplateType);
+                // 获取 `grid` 的 `image column` 的模板
+                $strGridImgColumnTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.image_column', $this->baseTemplateType);
                 // `form` 的 `get options`. 获取遍历数据的模板
                 $strFormGetOptionsTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.form-fields.display.get-options', $this->baseTemplateType);
                 // `form` 的 `option`. 选项的模板[->option($OPTIONS$);]
@@ -199,8 +242,10 @@ class ControllerGenerator extends BaseGenerator
                 $strModelRelationsStore   = '';
                 $strModelRelationsUpdate  = '';
                 $strModelRelationsDestroy = '';
-                $m2mFlag = false;
-
+                $m2mFlag                  = false;
+                // 增加图片上传的store, update方法
+                $strUploadImageStore  = '';
+                $strUploadImageUpdate = '';
                 /**
                  * relations crud start
                  */
@@ -257,16 +302,155 @@ class ControllerGenerator extends BaseGenerator
                 $templateData = str_replace('$LARAVEL_ADMIN_MODEL_M2M_RELATIONS_STORE$', $strModelRelationsStore, $templateData);
                 $templateData = str_replace('$LARAVEL_ADMIN_MODEL_M2M_RELATIONS_UPDATE$', $strModelRelationsUpdate, $templateData);
                 $templateData = str_replace('$LARAVEL_ADMIN_MODEL_M2M_RELATIONS_DESTORY$', $strModelRelationsDestroy, $templateData);
+                // 遍历关联关系字段
+                $detailButtonTemplate = '';
+                $batchBelongTemplate  = '';
+                $batchEditTemplate    = '';
+                $detailTab            = '';
+                $detailTabItem        = '';
+                $detailTabGrid        = '';
+                $flag                 = true;
+                foreach ($this->commandData->relations as $key => $relation) {
+                    // 如果是hasMany, 在grid中添加详情按钮
+                    if ($relation->type == '1tm') {
+                        // 获取详情按钮的模板数据
+                        $detailButtonTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.detail_button', $this->baseTemplateType);
+
+                        if ($flag) {
+                            // 如果有一对多, 或者多对多, 获取详情按钮点进去的视图模板
+                            $detailTab = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.tab', $this->baseTemplateType);
+                            $flag      = false;
+                        }
+                        $relationName = $relation->inputs[0];
+                        // 获取里面tab项的内容
+                        $detailTabItemTemp = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.tab_item', $this->baseTemplateType);
+                        $detailTabItemTemp = str_replace('$RELATION_NAME$', $relationName, $detailTabItemTemp);
+                        $detailTabItem     .= str_replace('$RELATION_NAME_CAMEL$', camel_case($relationName), $detailTabItemTemp) . PHP_EOL;
+                        // 获取tab_content里的内容
+                        $detailTabGridTemp = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.tab_item_content', $this->baseTemplateType);
+                        $detailTabGridTemp = str_replace('$RELATION_NAME$', $relationName, $detailTabGridTemp);
+                        $detailTabGridTemp = str_replace('$RELATION_NAME_CAMEL$', camel_case($relationName), $detailTabGridTemp);
+                        $detailTabGrid     .= str_replace('$RELATION_NAME_SNAKE$', snake_case($relationName), $detailTabGridTemp) . PHP_EOL;
+
+                    }
+                    // 如果是belongToOne, 则在grid中添加批量归属按钮
+                    if ($relation->type == 'mt1') {
+                        $relationName        = $relation->inputs[0];
+                        $batchBelongTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.batch_belong', $this->baseTemplateType);
+                        $batchBelongTemplate = str_replace('$RELATION_NAME$', $relationName, $batchBelongTemplate);
+                    }
+                    // 如果是belongToMany, 在grid中添加批量添加按钮
+                    if ($relation->type == 'mtm') {
+                        // 获取详情按钮的模板数据
+                        $detailButtonTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.detail_button', $this->baseTemplateType);
+                        if ($flag) {
+                            // 如果有一对多, 或者多对多, 获取详情按钮点进去的视图模板
+                            $detailTab = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.tab', $this->baseTemplateType);
+                            $flag      = false;
+                        }
+                        $relationName = $relation->inputs[0];
+                        // 获取里面tab项的内容
+                        $detailTabItemTemp = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.tab_item', $this->baseTemplateType);
+                        $detailTabItemTemp = str_replace('$RELATION_NAME$', $relationName, $detailTabItemTemp);
+                        $detailTabItem     .= str_replace('$RELATION_NAME_CAMEL$', camel_case($relationName), $detailTabItemTemp) . PHP_EOL;
+                        // 获取tab_content里的内容
+                        $detailTabGridTemp = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.tab_item_content', $this->baseTemplateType);
+                        $detailTabGridTemp = str_replace('$RELATION_NAME$', $relationName, $detailTabGridTemp);
+                        $detailTabGridTemp = str_replace('$RELATION_NAME_CAMEL$', camel_case($relationName), $detailTabGridTemp);
+                        $detailTabGrid     .= str_replace('$RELATION_NAME_SNAKE$', snake_case($relationName), $detailTabGridTemp) . PHP_EOL;
+                    }
+
+                    // 如果是多态morphTo关系, 在grid中添加批量编辑按钮
+                    if ($relation->type == 'mht') {
+                        $relationName      = $relation->inputs[0];
+                        $batchEditTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.relation-edit.batch_edit', $this->baseTemplateType);
+                        $batchEditTemplate = str_replace('$RELATION_NAME$', $relationName, $batchEditTemplate);
+                    }
+                }
+                if (!empty($detailTabItem)) {
+                    $detailTab = str_replace('$TAB_ITEMS$', $detailTabItem, $detailTab);
+                }
+                $templateData = str_replace('$DETAIL_BUTTON$', $detailButtonTemplate, $templateData);
+                $templateData = str_replace('$BATCH_BELONG$', $batchBelongTemplate, $templateData);
+                $templateData = str_replace('$BATCH_EDIT$', $batchEditTemplate, $templateData);
+                $templateData = str_replace('$DETAIL_TAB$', $detailTab, $templateData);
+                $templateData = str_replace('$DETAIL_TAB_GRID$', $detailTabGrid, $templateData);
+
                 $templateData = fill_template($this->commandData->dynamicVars, $templateData);
                 /**
                  * relations crud end
                  */
 
                 /**
+                 * upload image store and update start
+                 */
+                foreach ($this->commandData->fields as $key => $field) {
+                    $imgFlag = false;
+                    // 控件类型
+                    if (!empty($field->htmlType)) {
+                        $strHtmlType = $field->htmlType;
+                    }
+                    // 如果控件类型不是image,则跳过
+                    if ($strHtmlType == 'image') {
+                        $imgFlag = true;
+                    }
+                    // 判断是否有name字段
+                    $flag = false;
+                    // name
+                    $name = '';
+                    // label
+                    $label = '';
+                    // name
+                    if (!empty($field->name)) {
+                        $name  = $field->name;
+                        $label = $field->name;
+                        $flag  = true;
+                    }
+                    // label
+                    if (!empty($field->label)) {
+                        $label = $field->label;
+                    }
+                    // 增加图片上传的 `store`, `update`方法
+                    if ($imgFlag) {
+                        // 新增
+                        $strUploadImageStore = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.upload-image.store', $this->baseTemplateType);
+                        $strUploadImageStore = fill_template($this->commandData->dynamicVars, $strUploadImageStore);
+                        // 替换字段【图片大小、路径、缩略图尺寸】
+                        $strUploadImageStore = str_replace('$IMAGE_COLUMN$', $field->name, $strUploadImageStore);
+                        $strUploadImageStore = str_replace('$MAX_SIZE$', $field->maxSize, $strUploadImageStore);
+                        $strUploadImageStore = str_replace('$ROOT_DIR$', $field->rootDir, $strUploadImageStore);
+                        $strUploadImageStore = str_replace('$WIDTH$', $field->imgWidth, $strUploadImageStore);
+                        $strUploadImageStore = str_replace('$HEIGHT$', $field->imgHeight, $strUploadImageStore);
+                        $strUploadImageStore = str_replace('$ALLOWED_EXTENSIONS$', $field->allowedExtensions, $strUploadImageStore);
+                        // 编辑
+                        $strUploadImageUpdate = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.upload-image.update', $this->baseTemplateType);
+                        $strUploadImageUpdate = fill_template($this->commandData->dynamicVars, $strUploadImageUpdate);
+                        $updateRules          = new RequestGenerator($this->commandData);
+                        $strUploadImageUpdate = str_replace('$UPDATE_RULES$', implode(',' . infy_nl_tab(1, 2), $updateRules->generateUpdateRules()), $strUploadImageUpdate);
+                        $strUploadImageUpdate = str_replace('$IMAGE_COLUMN$', $field->name, $strUploadImageUpdate);
+                        $strUploadImageUpdate = str_replace('$MAX_SIZE$', $field->maxSize, $strUploadImageUpdate);
+                        $strUploadImageUpdate = str_replace('$ROOT_DIR$', $field->rootDir, $strUploadImageUpdate);
+                        $strUploadImageUpdate = str_replace('$WIDTH$', $field->imgWidth, $strUploadImageUpdate);
+                        $strUploadImageUpdate = str_replace('$HEIGHT$', $field->imgHeight, $strUploadImageUpdate);
+                        $strUploadImageUpdate = str_replace('$ALLOWED_EXTENSIONS$', $field->allowedExtensions, $strUploadImageUpdate);
+                    }
+                }
+                // dd($strUploadImageStore);
+                $templateData = str_replace('$LARAVEL_ADMIN_STORE_UPLOAD_IMAGE$', $strUploadImageStore, $templateData);
+                $templateData = str_replace('$LARAVEL_ADMIN_UPDATE_UPLOAD_IMAGE$', $strUploadImageUpdate, $templateData);
+                $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+                /**
+                 * upload image store and update end
+                 */
+
+                /**
                  * form start
                  */
                 // `laravel-admin` 的 `form` 里面的字段, 遍历 `普通字段` 和 `m2m` 关联字段
-                foreach (array_merge($this->commandData->fields, $this->commandData->hasM2mRelationFields) as $key => $field) {
+                // 按照fields.json文件中tableOrder进行排序,
+                $formFields = array_merge($this->commandData->fields, $this->commandData->hasM2mRelationFields);
+                $formFields = collect($this->commandData->fields)->sortBy('tableOrder');
+                foreach ($formFields as $key => $field) {
                     // 如果不需要在 `form` 显示, 则跳过
                     if (!$field->inForm) {
                         continue;
@@ -331,6 +515,15 @@ class ControllerGenerator extends BaseGenerator
                             }
                             $strFromType = $strHtmlType . '(\'' . $name . '\', \'' . $second_field_name . '\', \'' . $label . '\')';
                         }
+                        // 图片字段
+                        if ($field->htmlType == 'image') {
+                            $strFromType = $strHtmlType . '(\'' . $name . '\', \'' . $label . '\')->removable()';
+                            // 如果是图片字段 需要用到模型, 则需要在命名空间引入图片上传类
+                            // $namespaceModelList[] = $this->commandData->namespaceModelMapping['UploadImage'];
+                            // $namespaceModelList[] = $this->commandData->namespaceModelMapping['Validator'];
+                            $namespaceModelList[] = 'App\Classes\Image\UploadImage';
+                            $namespaceModelList[] = 'Validator';
+                        }
                     }
                     // 获取 `options` 中的属性和值, 略过 `second_field_name` 和 `options` 参数
                     if ($flag) {
@@ -368,8 +561,14 @@ class ControllerGenerator extends BaseGenerator
                 /**
                  * grid start
                  */
+                $detailViewItems = '';
+                $detailItems     = '';
+                $batchEditInputs = '';
                 // `laravel-admin` 的 `grid` 里面的字段, 遍历普通字段和m2m关联字段
-                foreach (array_merge($this->commandData->fields, $this->commandData->hasM2mRelationFields) as $key => $field) {
+                $fields = array_merge($this->commandData->fields, $this->commandData->hasM2mRelationFields);
+                // 按照字段中的tableOrder进行一个排序
+                $fields = collect($fields)->sortBy('tableOrder');
+                foreach ($fields as $key => $field) {
                     if (!$field->inIndex) {
                         continue;
                     }
@@ -409,12 +608,119 @@ class ControllerGenerator extends BaseGenerator
                             if (count($field->displayField) > 0) {
                                 $name = camel_case($field->displayField[0]) . '.' . $field->displayField[2];
                             }
-                            $tempGridColumnData = str_replace('$FIELD_NAME$', $name, $strGridColumnTemplate);
-                            $tempGridColumnData = str_replace('$FIELD_TITLE$', $title, $tempGridColumnData . "\n");
+                            // 图片字段
+                            if ($field->htmlType == 'image') {
+                                $tempGridColumnData = str_replace('$FIELD_NAME$', $name, $strGridImgColumnTemplate);
+                                $tempGridColumnData = str_replace('$FIELD_TITLE$', $title, $tempGridColumnData);
+                            } else {
+                                $tempGridColumnData = str_replace('$FIELD_NAME$', $name, $strGridColumnTemplate);
+                                $tempGridColumnData = str_replace('$FIELD_TITLE$', $title, $tempGridColumnData);
+                            }
                         }
+                        // 判断字段是否需要使用标签的形式展示
+                        if (empty($field->labelOptions)) {
+                            // 不需要使用标签展示
+                            $tempGridColumnData = str_replace('$IS_DISPLAY_LABEL$', '', $tempGridColumnData);
+                        } else {
+                            // 需要使用标签展示
+                            $labelOptions = explode(',', $field->labelOptions);
+                            $option       = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.column_display_label', $this->baseTemplateType);
+                            $options      = '';
+                            // Log::info('test', $labelOptions);
+                            foreach ($labelOptions as $labelOption) {
+                                $optionArr = explode(':', $labelOption);
+                                $temp      = str_replace('$OPTION$', $optionArr[0], $option);
+                                // 0大多数是表示否定的意思, 这里背景色改成红色
+                                if ($optionArr[0] == 0) {
+                                    $temp = str_replace('bg-green', 'bg-red', $temp);
+                                }
+                                $temp    = str_replace('$OPTION_VALUE$', $optionArr[1], $temp);
+                                $options .= $temp;
+                            }
+                            $columnDisplay = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.column_display', $this->baseTemplateType);
+                            $columnDisplay = str_replace('$OPTIONS$', $options, $columnDisplay);
+                            // Log::info($columnDisplay, $tempGridColumnData);
+                            $tempGridColumnData = str_replace('$IS_DISPLAY_LABEL$', $columnDisplay, $tempGridColumnData);
+                        }
+                        // 判断字段是否在页内详情中显示
+                        if (!empty($field->isDisplayPageDetail)) {
+                            // 需要在页面详情中展示
+                            // 视图中的item
+                            $detailViewItem  = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.detail_view_item', $this->baseTemplateType);
+                            $detailViewItem  = str_replace('$FIELD$', $field->name, $detailViewItem);
+                            $detailViewItems .= str_replace('$FIELD_TITLE$', $field->title, $detailViewItem);
+                        }
+                        // 判断字段是否放需要行内编辑
+                        if (empty($field->rowEdit)) {
+                            // 不需要行内编辑
+                            $tempGridColumnData = str_replace('$IS_ROW_EDIT$', '', $tempGridColumnData . PHP_EOL);
+                        } else {
+                            // 需要行内编辑
+                            $tempGridColumnData = str_replace('$IS_ROW_EDIT$', '->editable()', $tempGridColumnData . PHP_EOL);
+                            $templateData       = str_replace('$IS_ROW_EDIT$', '', $templateData);
+                        }
+                        $batchEditInput  = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.batch-edit.batch_edit_input_view', $this->baseTemplateType);
+                        $batchEditInput  = str_replace('$FIELD$', $field->name, $batchEditInput);
+                        $batchEditInput  = str_replace('$FIELD_TITLE$', $field->title, $batchEditInput);
+                        $batchEditInputs .= $batchEditInput;
+
                         $strLaravelAdminColumnList .= $tempGridColumnData;
                     }
                 }
+                // 是否有行内按钮
+                // 获取fields.json文件的绝对路径
+                $jsonPath = $this->commandData->config->options['fieldsFile'];
+                $jsonPath = dirname($jsonPath);
+                // 如果button.json文件存在, 说明有行内按钮
+                // Log::info($jsonPath . '/button.json');
+                if (is_file($jsonPath . '/button.json')) {
+                    $buttonJsonContent  = file_get_contents($jsonPath . '/button.json');
+                    $buttonJsons        = json_decode($buttonJsonContent);
+                    $buttonTemplateData = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.button', $this->baseTemplateType);
+                    $buttons            = '';
+                    foreach ($buttonJsons as $buttonJson) {
+                        $buttons .= str_replace('$BUTTON_TITLE$', $buttonJson->name, $buttonTemplateData);
+                    }
+                    $templateData = str_replace('$ROW_BUTTON$', $buttons, $templateData);
+                }
+                // 如果不需要行内按钮
+                $templateData = str_replace('$ROW_BUTTON$', '', $templateData);
+                // 获取生成项目的根路径
+                $generatePath = $this->commandData->config->options['generatePath'];
+                // 拼装视图存放的相对路径
+                $relativeViewPath = $this->commandData->dynamicVars['$VIEW_PREFIX$'] . $this->commandData->dynamicVars['$MODEL_NAME_PLURAL_SNAKE$'];
+                $relativeViewPath = str_replace('\\', '.', $relativeViewPath);
+                // 获取视图存放的绝对路径
+                $absoluteViewPath = $this->commandData->config->pathViews;
+                // 生成批量编辑按钮
+                $batchEditButton = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.batch-edit.batch_edit_button', $this->baseTemplateType);
+                $batchEditButton = str_replace('$BATCH_EDIT_VIEW_PATH$', $relativeViewPath . '.batch_edit', $batchEditButton);
+                $templateData    = str_replace('$BATCH_EDIT_BUTTON$', $batchEditButton, $templateData);
+                $batchEditCode   = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.batch-edit.update', $this->baseTemplateType);
+                $templateData    = str_replace('$BATCH_EDIT_CODE$', $batchEditCode, $templateData);
+                // 生成批量编辑的视图文件
+                // Log::info($viewPath);
+                $batchEditView = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.batch-edit.batch_edit_view', $this->baseTemplateType);
+                $batchEditView = str_replace('$INPUTS$', $batchEditInputs, $batchEditView);
+                $batchEditView = fill_template($this->commandData->dynamicVars, $batchEditView);
+                FileUtil::createFile($absoluteViewPath, 'batch_edit.blade.php', $batchEditView);
+                // 如果不需要行内编辑
+                $templateData = str_replace('$IS_ROW_EDIT$', '$MODEL_NAME$', $templateData);
+                // 判断有无页内详情视图内容, 生成详情对应的视图文件
+                if (!empty($detailViewItems)) {
+                    // 视图
+                    $detailView   = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.detail_view', $this->baseTemplateType);
+                    $detailView   = str_replace('$VIEW_ITEMS$', $detailViewItems, $detailView);
+                    FileUtil::createFile($absoluteViewPath, 'page_detail.blade.php', $detailView);
+                }
+                // 判断有无页内详情字段显示, 将控制器中的变量替换为相应的代码
+                if (!empty($detailView)) {
+                    $detail       = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.grid.detail', $this->baseTemplateType);
+                    $detail       = str_replace('$DETAIL_VIEW_PATH$', $relativeViewPath . '.page_detail', $detail);
+                    $templateData = str_replace('$IS_DISPLAY_PAGE_DETAIL$', $detail, $templateData);
+                }
+                // 如果不需要页内详情
+                $templateData = str_replace('$IS_DISPLAY_PAGE_DETAIL$', '', $templateData);
 
                 // 替换 `grid` 中的 `column` 模板
                 $templateData = str_replace('$LARAVELADMIN_COLUMN_LIST$', $strLaravelAdminColumnList, $templateData);

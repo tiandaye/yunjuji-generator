@@ -1,0 +1,24 @@
+<!-- 页内详情按钮 -->
+<span onclick="(function() {
+    var target = this.event.target;
+    // 计算表格有多少列
+    var colCount = $(target).parents('tr').children().length;
+    // 标题占多少列
+    var title = Math.floor(colCount/3);
+    // 内容占多少列
+    var content = colCount - title;
+    // 展示字段的详情值
+    var html = '<tr><td colspan=\''+colCount+'\'><div class=\'panel\'>'+
+$VIEW_ITEMS$
+        '</div></td></tr>';
+    // 隐藏详情
+    if ($(target).hasClass('is_show')) {
+        $(target).parents('tr').next().remove();
+        $(target).removeClass('is_show');
+    } else {
+        // 显示详情
+        $(target).parents('tr').after(html);
+        $(target).addClass('is_show');
+    }
+})()" class="label bg-green"> 详情 </span>
+

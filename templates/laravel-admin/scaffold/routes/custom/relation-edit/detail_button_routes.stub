@@ -1,0 +1,2 @@
+Route::get('$ROUTE_PREFIX$$MODEL_NAME_PLURAL_SNAKE$/detail/{id}', [
+    'as'=> '$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.detail', 'uses' => '$PATH_PREFIX$$MODEL_NAME$Controller@$MODEL_NAME_CAMEL$Details']);

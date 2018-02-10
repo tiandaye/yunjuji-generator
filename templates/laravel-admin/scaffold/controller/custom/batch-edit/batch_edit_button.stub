@@ -1,0 +1,4 @@
+                // 批量编辑
+                if (Admin::user()->can('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit')) {
+                    $tools->append(view('$BATCH_EDIT_VIEW_PATH$')->render());
+                }

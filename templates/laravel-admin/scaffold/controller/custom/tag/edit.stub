@@ -1,0 +1,8 @@
+        //  根据当前ID获取当前ID所有的标签
+        $$MODEL_NAME_CAMEL$ = GenerateTag::with('tagged')->where(['id' => $id])->first();
+        $tags        = [];
+        foreach ($$MODEL_NAME_CAMEL$->tags as $key => $tag) {
+            $tags[$key] = $tag->name;
+        }
+        $tags = json_encode($tags);
+        Admin::script("isCheckedByDomValue($tags);");

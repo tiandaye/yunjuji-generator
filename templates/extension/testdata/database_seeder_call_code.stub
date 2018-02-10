@@ -1,0 +1,1 @@
+        $this->call($UPPER_CAMEL_MODEL_NAME_SELF$TableSeeder::class);

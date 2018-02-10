@@ -156,6 +156,21 @@ class GenerateCommand extends Command
                 if (file_exists($namespaceModelMappingFilePath)) {
                     $artisanCommand .= " --namespaceModelMappingFile=$namespaceModelMappingFilePath";
                 }
+                
+
+                // 如果存在 `给模型打标签` json
+                $taggingPath = $migrateFileDir . '/tag.json';
+                if (file_exists($taggingPath)) {
+                    // 获取描述json信息
+                    $tagDescriptionJson = file_get_contents($taggingPath);
+                    // json解码
+                    $tagArrDescription = json_decode($tagDescriptionJson, 1);
+                    // 布尔值
+                    $bool = strtolower($tagArrDescription['isTagging']);
+                    if ($bool == 'true') {
+                        $artisanCommand .= " --isTagging=$bool";
+                    }
+                }
                 $commandResult[] = passthru("echo no|$artisanCommand", $result);
 
                 // 生成菜单
@@ -171,8 +186,8 @@ class GenerateCommand extends Command
                     // 转下划线命名法
                     return snake_case($val);
                 }, $aRoutePrefix);
-                $url = str_replace('.', '/', implode('/', $aRoutePrefix)) . '/' . snake_case(str_plural($modelName));
-                $menus[] = ['name' => $title, 'url' => $url];
+                $url          = str_replace('.', '/', implode('/', $aRoutePrefix)) . '/' . snake_case(str_plural($modelName));
+                $menus[]      = ['name' => $title, 'url' => $url, 'path' => $migrateFileDir];
             }
             // 生成的路由菜单
             file_put_contents($generatePath . '/menu.json', json_encode($menus));

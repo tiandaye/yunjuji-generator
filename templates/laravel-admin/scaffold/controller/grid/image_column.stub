@@ -1,0 +1,1 @@
+            $grid->column('$FIELD_NAME$', '$FIELD_TITLE$')->image();

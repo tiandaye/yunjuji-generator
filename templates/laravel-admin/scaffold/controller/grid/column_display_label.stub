@@ -1,0 +1,3 @@
+                    case $OPTION$:
+                        return '<span class="label bg-green">$OPTION_VALUE$</span>';
+                        break;

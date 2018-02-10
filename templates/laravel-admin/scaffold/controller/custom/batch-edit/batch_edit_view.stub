@@ -1,0 +1,93 @@
+<a href="javascript:void(0)" id="batch_edit_btn" class="btn btn-sm bg-green pull-right" style="margin-right: 10px"> <i
+            class="fa fa-edit"></i>批量编辑</a>
+<!-- 这个是弹出层表单的容器 -->
+<div id="batch_edit_container" style="display: none">
+    <form class="form-horizontal" id="batch_edit_form">
+    <br />
+$INPUTS$
+        <!-- 确定按钮 -->
+        <div class="btn-group batch_edit_submit_btn pull-right" style="margin-bottom: 10px; margin-right: 200px">
+            <div class="btn btn-info batch_edit_submit_btn">
+                <i class="fa fa-save"></i>&nbsp;提交
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    /**
+     * 弹出表单进行批量编辑
+     */
+    $('#batch_edit_btn').on('click', function (e) {
+        // 判断有无选中的编辑项
+        if (!$('div.icheckbox_minimal-blue.checked').length) {
+            layer.alert("你还没有选中需要批量编辑的记录!");
+            return;
+        }
+        // 获取弹出层的表单html模板代码
+        var formHtml = $('#batch_edit_container').html();
+        // 将容器中html模板代码移除, 避免一个页面存在两个一模一样的form表单
+        $('#batch_edit_container').children().remove();
+        layer.open({
+            type: 1,
+            title: '批量编辑',
+            skin: 'layui-layer-rim',
+            area: ['800px', '500px'],
+            content: formHtml,
+            // 注意这里, 当弹出层关闭的时候, 一定要记得将表单html代码回填到容器中, 以便下次弹出的时使用
+            end: function () {
+                $('#batch_edit_container').append(formHtml);
+            }
+        });
+        // $('.batch_edit').eq(1).attr('id', 'batch_edit_form');
+    });
+    /**
+     * 批量编辑提交表单信息
+     */
+    $('body').off('click').on('click', function (e) {
+        if ($(e.target).is('div.batch_edit_submit_btn')) {
+            // 获取弹出层表单中的数据
+            var formData = new FormData(document.getElementById('batch_edit_form'));
+            // 获取csrf token
+            formData.append("_token", LA.token);
+            // 已经选中的ids
+            $ids = [];
+            $('div.icheckbox_minimal-blue.checked').each(function (i) {
+                $(this).children().eq(1);
+                console.log($(this).children().eq(0));
+                $ids.push($(this).children().eq(0).attr('data-id'));
+            });
+            // 剔除第一个没用的元素, 第一个元素有可能是全选的哪个复选框
+            if (!$ids[0]) {
+                $ids.shift();
+            }
+            console.log($ids);
+            // 获取选中的记录的ids
+            formData.append("ids", $ids);
+            // 这里让表单模拟put提交, 应为浏览器不支持, laravel中提供了这种方式
+            formData.append("_method", "PUT");
+            console.log(formData.values());
+            $.ajax({
+                url : '/admin/$ROUTE_PREFIX$$MODEL_NAME_PLURAL_SNAKE$/0',
+                contentType: false,
+                processData: false,
+                type: 'post',
+                data: formData,
+                success: function (response) {
+                    if (response.status === 'success') {
+                        // 成功, 关闭弹出层
+                        layer.closeAll();
+                        // 重新加载修改之后的页面
+                        $.pjax.reload('#pjax-container');
+                    }
+                    // 无论成功, 还是失败, 弹出提信息!
+                    layer.alert(response.message);
+                },
+                error: function (response) {
+                    layer.alert(response.message);
+                }
+            });
+        }
+    });
+</script>
+
+                    

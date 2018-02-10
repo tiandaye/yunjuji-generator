@@ -41,6 +41,16 @@ class GeneratorField
     public $title;
     public $width;
     public $columnType;
+    // 上传图片大小限制
+    public $maxSize;
+    // 图片上传路径
+    public $rootDir;
+    // 缩略图尺寸
+    public $imgWidth;
+    public $imgHeight;
+    // 允许上传的图片格式
+    public $allowedExtensions;
+
     /**
      * tian add end
      */
@@ -173,9 +183,36 @@ class GeneratorField
         $field->title      = isset($fieldInput['title']) ? $fieldInput['title'] : '';
         $field->width      = isset($fieldInput['width']) ? $fieldInput['width'] : '';
         $field->columnType = isset($fieldInput['columnType']) ? $fieldInput['columnType'] : '';
+        // 上传图片大小限制
+        $field->maxSize = isset($fieldInput['maxSize']) ? $fieldInput['maxSize'] : '';
+        // 图片上传路径
+        $field->rootDir = isset($fieldInput['rootDir']) ? $fieldInput['rootDir'] : '';
+        // 缩略图尺寸
+        $field->imgWidth  = isset($fieldInput['imgWidth']) ? $fieldInput['imgWidth'] : '';
+        $field->imgHeight = isset($fieldInput['imgHeight']) ? $fieldInput['imgHeight'] : '';
+        // 允许上传的图片格式 
+        $field->allowedExtensions = isset($fieldInput['allowedExtensions']) ? json_encode($fieldInput['allowedExtensions']) : '';
+
+        // }
+
         /**
          * tain add end
          */
+        /*
+         * huang add  start
+         */
+        // 该字段用来判断是否需要行内编辑
+        $field->rowEdit = isset($fieldInput['rowEdit']) ? $fieldInput['rowEdit'] : '';
+        // 该字段用来将状态字段变成标签形式展示到grid里面
+        $field->labelOptions = isset($fieldInput['labelOptions']) ? $fieldInput['labelOptions'] : '';
+        // 该字段用来判断该字段是否显示到页内详情中
+        $field->isDisplayPageDetail = isset($fieldInput['isDisplayPageDetail']) ? $fieldInput['isDisplayPageDetail'] : '';
+        // 该字段用来进行排序, 如果没有设置tableOrder, 默认1000, 一个模型里不可能有这么多字段, 这样就相当于排到了最后
+        $field->tableOrder = isset($fieldInput['tableOrder']) ? $fieldInput['tableOrder'] : 1000;
+        /*
+         * huang add end
+         */
+
 
         return $field;
     }

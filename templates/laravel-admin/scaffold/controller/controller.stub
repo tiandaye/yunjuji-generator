@@ -74,7 +74,10 @@ class $MODEL_NAME$Controller extends Controller
     {
         $input = $request->all();
 
+        $LARAVEL_ADMIN_STORE_UPLOAD_IMAGE$
+
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->create($input);
+$LARAVEL_ADMIN_TAGGING_STORE$
 $LARAVEL_ADMIN_MODEL_M2M_RELATIONS_STORE$
         Flash::success(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.saved_success'));
 
@@ -112,6 +115,8 @@ $LARAVEL_ADMIN_MODEL_M2M_RELATIONS_STORE$
      */
     public function edit($id)
     {
+$LARAVEL_ADMIN_TAGGING_EDIT$
+
         return Admin::content(function (Content $content) use ($id) {
 
             $content->header(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit_header'));
@@ -129,8 +134,9 @@ $LARAVEL_ADMIN_MODEL_M2M_RELATIONS_STORE$
      *
      * @return Response
      */
-    public function update($id, $MODEL_NAME$Request $request)
+    public function update($id, $IS_ROW_EDIT$Request $request)
     {
+$BATCH_EDIT_CODE$
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->findWithoutFail($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
@@ -138,8 +144,10 @@ $LARAVEL_ADMIN_MODEL_M2M_RELATIONS_STORE$
 
             return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
         }
-
-        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->update($request->all(), $id);
+        $input = $request->all();
+$LARAVEL_ADMIN_UPDATE_UPLOAD_IMAGE$
+        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->update($input, $id);
+$LARAVEL_ADMIN_TAGGING_UPDATE$
 $LARAVEL_ADMIN_MODEL_M2M_RELATIONS_UPDATE$
         Flash::success(__('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.updated_success'));
 
@@ -163,6 +171,7 @@ $LARAVEL_ADMIN_MODEL_M2M_RELATIONS_UPDATE$
         // 如果是数组则进行批量删除
         if (is_array($id)) {
             if ($flag = $this->$MODEL_NAME_CAMEL$Repository->batchDelete('id', $id)) {
+$LARAVEL_ADMIN_TAGGING_BATCH_DESTROY$
                 return response()->json(['message' => __('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.deleted_success'), 'status' => $flag]);
             } else {
                 return response()->json(['message' => __('base.deleted.error'), 'status' => $flag]);
@@ -178,6 +187,7 @@ $LARAVEL_ADMIN_MODEL_M2M_RELATIONS_UPDATE$
         }
 
         if ($flag = $this->$MODEL_NAME_CAMEL$Repository->delete($id)) {
+$LARAVEL_ADMIN_TAGGING_DESTROY$
 $LARAVEL_ADMIN_MODEL_M2M_RELATIONS_DESTORY$
             return response()->json(['message' => __('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.deleted_success'), 'status' => $flag]);
         } else {
@@ -195,6 +205,7 @@ $LARAVEL_ADMIN_MODEL_M2M_RELATIONS_DESTORY$
 
             $form->display('id', 'ID');
 $LARAVELADMIN_FIELD_LIST$
+$LARAVEL_ADMIN_TAGGING_FORM$
             $form->display('created_at', __('base.created_at'));
             $form->display('updated_at', __('base.updated_at'));
 
@@ -251,6 +262,7 @@ $LARAVELADMIN_FIELD_LIST$
 
             // 编辑和删除按钮
             $grid->actions(function ($actions) {
+$DETAIL_BUTTON$
                 // 编辑按钮
                 if (Admin::user()->cannot('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit')) {
                     $actions->disableEdit();
@@ -259,6 +271,7 @@ $LARAVELADMIN_FIELD_LIST$
                 if (Admin::user()->cannot('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.destroy')) {
                     $actions->disableDelete();
                 }
+$ROW_BUTTON$
             });
 
             // 导出按钮
@@ -273,10 +286,15 @@ $LARAVELADMIN_FIELD_LIST$
                     if (Admin::user()->cannot('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.batch_destroy')) {
                         $batch->disableDelete();
                     }
+$BATCH_BELONG$
                 });
+$BATCH_EDIT_BUTTON$
             });
 
 $LARAVELADMIN_COLUMN_LIST$
+$IS_DISPLAY_PAGE_DETAIL$
+$LARAVEL_ADMIN_TAGGING_GRID$
+
             /**
              * 过滤处理
              */
@@ -287,4 +305,7 @@ $LARAVELADMIN_FILTER_FIELD_LIST$
             });
         });
     }
+
+$DETAIL_TAB$
+$DETAIL_TAB_GRID$
 }

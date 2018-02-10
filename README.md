@@ -147,6 +147,10 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
     - inIndex-是否在表格里显示, bool
     - options-扩展的参数, string
     - searchable-可搜索的字段【目前没用】
+    - tableOrder-字段在列表页或者表单页出现顺序, 升序排列, 如1会排在2的前面
+    - rowEdit-是否支持行内编辑, true表示支持行内编辑, false表示不支持行内编辑
+    - isDisplayPageDetail-表示字段是否在页内详情中显示, true表示在页内详情中显示, false表示不在页内详情中显示
+    - labelOptions-将状态字段的数值表示成对应的文字含义, 如"1:是,0否"
 - 例子
 ```
 [{
@@ -155,6 +159,10 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
     "htmlType": "",
     "validations": "",
     "searchable": false,
+    "rowEdit":true,
+    "tableOrder": 1,
+    "isDisplayPageDetail": true,
+    "labelOptions": "1:是,0否",
     "fillable": false,
     "primary": true,
     "inForm": false,
@@ -224,6 +232,186 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
     "inIndex": false
 }]
 ```
+### 行内按钮json文件, 文件名称button.json
+- 格式说明
+    - json格式. 整个文件是一个'[]'
+- 参数说明
+    - name-鼠标放到按钮图标上显示的名称
+- 例子
+```
+[
+    {
+        "name":"详情"
+    },
+    {
+        "name":"更新"
+    }
+]
+```
+### 生成测试数据json文件, 文件名称:seed.json
+- 格式说明
+    - json格式, 整个文件是一个'{}'
+- 参数说明
+    - model_num- 一个模型填充的总记录数, 如: 100, 表示模型会被填充100条假数据记录
+    - relation- 表示该模型是否有关联关系, 如: 0或1, 其中0表示该模型与其他模型没有关联关系, 1表示该模型与其他模型没有关联关系
+    - fields- 模型字段的信息, 包括:
+        - name 字段的名称
+        - value 字段的初始参数
+        - type 字段数据类型 该参数的取值范围:
+            - name 该字段的填充数据是人名, 无需初始参数
+            - enail 该字段的填充数据是邮件地址, 无需初始参数
+            - username 该字段的填充数据是用户账户的名称, 无需初始参数
+            - password 该字段的填充数据是密码, 需要初始参数, 如"123456", 表示密码的明文是"123456"
+            - phone 该字段的天重置是手机号, 无需初始化参数
+            - department 该字段的填充数据是部门名称, 无需初始化参数
+            - idCard 该字段填充数据是身份证号, 无需初始化参数
+            - string 该字段填充数据是字符串, 需要初始化参数, 如"hello", 表示填充"hello"
+            - date 该字段填充数据是日期, 无需初始化参数
+            - time 该字段填充数据是时间, 无需初始化参数
+            - datetime 该字段填充数据是日期时间, 无需初始化参数
+            - int 该字段填充数据是整形, 需要初始化参数, 如: 1, 表示填充1
+            - randomInt 该字段填充数据是某个范围内随机的一个整形, 需要初始化参数, 如: "1,10", 表示从1~10
+            - price 该字段填充数据是某个范围内的价格, 需要初始化参数, 如: "100,1000", 表示从100.00~1000.00
+            - randomFloat 该字段填充数据是某个范围内的浮点数, 需要初始化参数, 如: "0,100", 表示从0.0~100.0
+            - randomElement 该字段填充数据是从给定几个参数中随机抽取一个, 需要初始化参数, 如: ['红', '黄', '蓝'], 表示从这三种颜色中随机取出一种
+            - randomElements 该字段填充数据是从给定几个参数中随机抽取多个, 需要初始化参数, 如: ['红', '黄', '蓝', 2], 表示从这三种颜色中随机抽取出两种, 最后一个元素数字2表示抽取两个
+            - latitude 该字段填充数据是纬度, 无需初始化参数
+            - longitude 该字段填充数据是经度, 无需初始化参数
+            - address 该字段的填充数据地址, 无需初初始化参数
+            - gender 该字段的填充数据是性别, 需要初始化参数, 如 [1,2], 1代表男, 2代表女
+            - url 该字段填充数据是url, 无需初始化参数
+            - ip 该字段填充数据是ip, 无需初始化参数
+            - realText 该字段填充的数据大段文本, 需要初始化参数, 如:5000,表示填充的文本长度是5000个字符
+- 例子
+```
+{
+  "model_num": 50,
+  "relation": 0,
+  "fields": [
+   {
+    "name": "real_name",
+    "type": "name",
+    "value":""
+   },
+   {
+    "name": "user_email",
+    "type": "email",
+    "value":""
+   },
+   {
+    "name": "user_name",
+    "type": "username",
+    "value":""
+   },
+   {
+    "name": "user_password",
+    "type": "password",
+    "value":"123456"
+   },
+   {
+    "name": "user_phone",
+    "type": "phone",
+    "value":""
+   },
+   {
+    "name": "user_department",
+    "type": "department",
+    "value":""
+   },
+   {
+    "name": "user_id_card",
+    "type": "idCard",
+    "value":""
+   },
+   {
+    "name": "goods_title",
+    "type": "string",
+    "value":"iphone X"
+   },
+   {
+    "name": "birthdate",
+    "type": "date",
+    "value":""
+   },
+   {
+    "name": "reservation_time",
+    "type": "time",
+    "value":""
+   },
+   {
+    "name": "created_at",
+    "type": "datetime",
+    "value":""
+   },
+   {
+    "name": "is_publish",
+    "type": "int",
+    "value": 1
+   },
+   {
+    "name": "goods_num",
+    "type": "randomInt",
+    "value": "1,10"
+   },
+   {
+    "name": "goods_price",
+    "type": "price",
+    "value": "100,1000"
+   },
+   {
+    "name": "score",
+    "type": "randomFloat",
+    "value": "0,100"
+   },
+   {
+    "name": "color",
+    "type": "randomElement",
+    "value": ['红', '黄', '蓝']
+   },
+   {
+    "name": "movie_category",
+    "type": "randomElements",
+    "value": ['历史', '战争', '剧情', 2]
+   },
+   {
+    "name": "latitude",
+    "type": "latitude",
+    "value": ""
+   },
+   {
+    "name": "longitude",
+    "type": "longitude",
+    "value": ""
+   },
+   {
+    "name": "address_info",
+    "type": "address",
+    "value": ""
+   },
+   {
+    "name": "user_gender",
+    "type": "gender",
+    "value": [1,2]
+   },
+   {
+    "name": "visit_url",
+    "type": "url",
+    "value": ""
+   },
+   {
+    "name": "client_ip",
+    "type": "ip",
+    "value":""
+   },
+   {
+    "name": "detail",
+    "type": "realtext",
+    "value": 5000
+   }
+ ]
+}
+```
+
 # 安装
 ## 安装自动产生的依赖
 - 在 `composer.json` 中引入
@@ -437,6 +625,15 @@ composer require yunjuji/yunjuji-generator:dev-dev --prefer-source
 	- 无
 - 命令参数说明
 	- `$PATH` - 目录的绝对路径
+### yunjuji:generateTestData命令, 给定的模型填充假数据
+- 命令说明
+    - 批量填充假数据 `php artisan yunjuji:generateTestData $PATH $GENERATE_PATH`
+- 命令选项说明
+    - 无
+- 命令参数说明
+    - `$PATH` -当前模型seed.json文件存放的绝对路径
+    - `$GENERATE_PATH` - 生成文件将要存放的项目的根目录绝对路径
+
 ## csv说明
 ### 注意点
 1. 多个字段之间统一用 `;` 分隔， 最后一个字段不要加 `;`。

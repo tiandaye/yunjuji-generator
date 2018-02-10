@@ -1,0 +1,25 @@
+        // 如果是批量编辑
+        $ids = $request->input('ids');
+        if ($id == 0 && !empty($ids)) {
+            $ids = explode(',', $ids);
+            // 将数据库中没有对应字段的参数过滤掉
+            $inputs = $request->except(['ids', '_token', '_method']);
+            // 将没有填写的参数下标干掉, 避免表中数据被更新为空
+            foreach ($inputs as $key => $input) {
+                if (!isset($input) || $input === '') {
+                    unset($inputs[$key]);
+                }
+            }
+            if (empty($inputs)) {
+                return response()->json(['status' => 'error', 'message' => '没有需要更新的参数!']);
+            }
+            try {
+                $result = $MODEL_NAME$::whereIn('id', $ids)->update($inputs);
+            } catch (\Exception $e) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+            }
+            if ($result) {
+                return response()->json(['status' => 'success', 'message' => '成功!']);
+            }
+            return response()->json(['status' => 'error', 'message' => '失败!']);
+        }

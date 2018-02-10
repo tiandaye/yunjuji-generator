@@ -1,0 +1,12 @@
+            // 展示当前模型已有标签
+            $grid->column('', '标签')->display(function () {
+                $$MODEL_NAME_CAMEL$ = $MODEL_NAME$::with('tagged')->where(['id' => $this->id])->first();
+
+                $tags = '';
+                foreach ($$MODEL_NAME_CAMEL$->tags as $tag) {
+                    if (!empty($tag)) {
+                        $tags .= '<span class="badge bg-green">' . $tag->name . '</span>' . PHP_EOL;
+                    }
+                }
+                return $tags;
+            });

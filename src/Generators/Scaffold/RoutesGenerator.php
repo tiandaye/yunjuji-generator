@@ -77,6 +77,27 @@ class RoutesGenerator
         } else {
             $this->routesTemplate = yunjuji_get_template($this->formModePrefix . 'scaffold.routes.routes', $this->baseTemplateType);
         }
+        // 遍历关联关系字段, 生成路由
+        $routesTemplate = '';
+        $flag           = true;
+        foreach ($this->commandData->relations as $key => $relation) {
+            // 如果是hasMany或者manyToMany, 在grid中添加详情按钮路由,以及对应按钮里用到的ajax请求路由
+            if ($relation->type == '1tm' || $relation->type == 'mtm') {
+                $relationName      = $relation->inputs[0];
+                $relationNameSnake = snake_case($relation->inputs[0]);
+                $routesTemplate    .= yunjuji_get_template($this->formModePrefix . 'scaffold.routes.custom.relation-edit.add_routes', $this->baseTemplateType);
+                $routesTemplate    .= yunjuji_get_template($this->formModePrefix . 'scaffold.routes.custom.relation-edit.delete_routes', $this->baseTemplateType);
+                if ($flag) {
+                    $routesTemplate .= yunjuji_get_template($this->formModePrefix . 'scaffold.routes.custom.relation-edit.detail_button_routes', $this->baseTemplateType);
+                    $flag           = false;
+                }
+                $routesTemplate .= yunjuji_get_template($this->formModePrefix . 'scaffold.routes.custom.relation-edit.get_data_routes', $this->baseTemplateType);
+                $routesTemplate .= yunjuji_get_template($this->formModePrefix . 'scaffold.routes.custom.relation-edit.select_routes', $this->baseTemplateType);
+                $routesTemplate = str_replace('$RELATION_NAME$', $relationName, $routesTemplate);
+                $routesTemplate = str_replace('$RELATION_NAME_SNAKE$', $relationNameSnake, $routesTemplate);
+            }
+        }
+        $this->routesTemplate = str_replace('$RELATION_EDIT_ROUTES$', $routesTemplate, $this->routesTemplate);
         $this->routesTemplate = yunjuji_fill_template($this->commandData->dynamicVars, $this->routesTemplate);
         /**
          * tian add end

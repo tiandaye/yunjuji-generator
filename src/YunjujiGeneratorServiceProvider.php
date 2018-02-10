@@ -12,6 +12,7 @@ namespace Yunjuji\Generator;
 use Illuminate\Support\ServiceProvider;
 use Yunjuji\Generator\Console\Commands\Scaffold\GenerateFieldJsonCommand;
 use Yunjuji\Generator\Console\Commands\Scaffold\GenerateCommand;
+use Yunjuji\Generator\Console\Commands\Scaffold\GenerateTestData;
 use Yunjuji\Generator\Console\Commands\Scaffold\RollbackCommand;
 use Yunjuji\Generator\Console\Commands\Scaffold\PublishCommand;
 use Yunjuji\Generator\Console\Commands\Scaffold\FillDataCommand;
@@ -124,6 +125,10 @@ class YunjujiGeneratorServiceProvider extends ServiceProvider
         $this->app->singleton('yunjuji.scaffold', function ($app) {
             return new ScaffoldGeneratorCommand();
         });
+        // 生成测试数据
+        $this->app->singleton('yunjuji.generateTestData', function ($app) {
+            return new GenerateTestData();
+        });
 
         /**
          * 引入命令
@@ -136,6 +141,7 @@ class YunjujiGeneratorServiceProvider extends ServiceProvider
             'yunjuji.fillData',
             'yunjuji.dropTable',
             'yunjuji.scaffold',
+            'yunjuji.generateTestData',
         ]);
 
         /**

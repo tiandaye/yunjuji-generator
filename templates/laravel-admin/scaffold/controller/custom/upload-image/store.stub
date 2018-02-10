@@ -1,0 +1,22 @@
+        $image = $request->file('$IMAGE_COLUMN$'); //使用laravel 自带的request类来获取一下文件.
+        if($image){
+            // 允许上传的图片格式
+            $allowedExtensions = "$ALLOWED_EXTENSIONS$";
+            // 上传图片路径
+            // $rootDir = config('filesystems.disks.admin.root')
+            $rootDir = "$ROOT_DIR$";
+            // 上传大小限制
+            $maxSize = "$MAX_SIZE$";
+            // 缩略图的尺寸
+            $resize = ['width' => "$WIDTH$", 'height' => "$HEIGHT$"];
+            $saveImage = new UploadImage;
+            // 调用图片上传方法
+            $result = $saveImage->uploadImage($image, $rootDir, $allowedExtensions, $maxSize, $resize);
+
+            if (is_array($result)) {
+                Flash::error($result['error']);
+                return back()->withInput();
+            } else {
+                $input['$IMAGE_COLUMN$'] = '/' . $result;
+            }
+        }

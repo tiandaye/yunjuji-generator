@@ -1,0 +1,1 @@
+        $tab->add('$RELATION_NAME$信息', $this->$RELATION_NAME_CAMEL$Grid($id));

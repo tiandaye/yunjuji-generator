@@ -201,7 +201,7 @@ class RequestGenerator extends BaseGenerator
      * [generateUpdateRules 为了在请求中生成 `update rules` ]
      * @return [type] [description]
      */
-    private function generateUpdateRules()
+    public function generateUpdateRules()
     {
         $rules = [];
 

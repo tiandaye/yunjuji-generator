@@ -1,0 +1,4 @@
+                // $BUTTON_TITLE$按钮
+                if (Admin::user()->can('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$')) {
+                    $actions->append('<a href="javascript:void(0)" title="$BUTTON_TITLE$"><i class="fa fa-toggle-right"></i></a>');
+                }

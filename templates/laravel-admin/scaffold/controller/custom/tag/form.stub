@@ -1,0 +1,4 @@
+            $form->text('tagName', '自定义标签');
+            // 展示所有的标签
+            $tags = $MODEL_NAME$::existingTags()->pluck('name', 'name')->toArray();
+            $form->checkbox('tags', '添加标签')->options($tags);

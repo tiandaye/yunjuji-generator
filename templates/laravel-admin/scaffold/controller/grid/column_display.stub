@@ -1,0 +1,8 @@
+->display(function ($val) {
+                switch ($val) {
+$OPTIONS$
+                    default:
+                        return '<span class="label bg-yellow">未知</span>';
+                        break;
+                }
+            })

@@ -1,0 +1,2 @@
+                    // 批量添加按钮
+                    $batch->add('批量添加', new \App\Admin\Extensions\Tools\$MODEL_NAME$\BelongTo$RELATION_NAME$());

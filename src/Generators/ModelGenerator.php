@@ -26,6 +26,29 @@ class ModelGenerator extends BaseGenerator
     private $path;
     private $fileName;
     private $table;
+    /**
+     * tian add
+     * [$baseTemplateType 基本的模板类型]
+     * @var [type]
+     */
+    private $baseTemplateType;
+
+    /**
+     * tian add
+     * [$formMode form的模式]
+     * @var [type]
+     */
+    private $formMode = '';
+
+    /**
+     * tian add
+     * [$formModePrefix description]
+     * @var [type]
+     */
+    private $formModePrefix = '';
+    /**
+     * tian add end
+     */
 
     /**
      * ModelGenerator constructor.
@@ -38,11 +61,25 @@ class ModelGenerator extends BaseGenerator
         $this->path        = $commandData->config->pathModel;
         $this->fileName    = $this->commandData->modelName . '.php';
         $this->table       = $this->commandData->dynamicVars['$TABLE_NAME$'];
+
+        // 2017-12-05 20:04
+        // 选择的模板
+        $this->baseTemplateType = config('yunjuji.generator.templates.base', 'yunjuji-generator');
+        if ($this->commandData->getOption('formMode')) {
+            $this->formMode       = $this->commandData->getOption('formMode');
+            $this->formModePrefix = $this->formMode . '.';
+        }
     }
 
     public function generate()
     {
-        $templateData = get_template('model.model', 'laravel-generator');
+        // $templateData = get_template('model.model', 'laravel-generator');
+        // 不同的模式选择不用的模板
+        if ($this->formMode) {
+            $templateData = yunjuji_get_template($this->formModePrefix . 'model.model', $this->baseTemplateType);
+        } else {
+            $templateData = yunjuji_get_template('model.model', $this->baseTemplateType);
+        }
 
         $templateData = $this->fillTemplate($templateData);
 
@@ -74,6 +111,10 @@ class ModelGenerator extends BaseGenerator
         $templateData = $this->fillDocs($templateData);
 
         $templateData = $this->fillTimestamps($templateData);
+
+        // 给模型添加 `引入laravel-tagging的trait方法`
+        $templateData = $this->fillLaravelTagging($templateData);
+       
 
         if ($this->commandData->getOption('primary')) {
             $primary = infy_tab() . "protected \$primaryKey = '" . $this->commandData->getOption('primary') . "';\n";
@@ -231,6 +272,18 @@ class ModelGenerator extends BaseGenerator
         }
 
         return str_replace('$TIMESTAMPS$', $replace, $templateData);
+    }
+    /**
+     * 填充 fill laravel-tagging的trait
+     */
+    public function fillLaravelTagging($templateData)
+    {
+
+        $strTagTraitTempalte = '';
+        if ($this->commandData->getOption('isTagging')) {
+            $strTagTraitTempalte = yunjuji_get_template($this->formModePrefix . 'scaffold.controller.custom.tag.tag_trait', $this->baseTemplateType);
+        }
+        return str_replace('$TAGTRAIT$', $strTagTraitTempalte, $templateData);
     }
 
     private function generateRules()

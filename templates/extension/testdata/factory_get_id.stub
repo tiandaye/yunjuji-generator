@@ -1,0 +1,1 @@
+    $$ID$s = $UPPER_CAMEL_MODEL_NAME_OTHER_ALL_PATH$::pluck('id')->toArray();

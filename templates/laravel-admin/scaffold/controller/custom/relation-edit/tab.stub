@@ -1,0 +1,18 @@
+    public function $MODEL_NAME_CAMEL$Details($id)
+    {
+        return Admin::content(function (Content $content) use ($id) {
+
+            $content->header(__('详情'));
+
+
+
+            // 数据
+            $content->row($this->$MODEL_NAME_CAMEL$Tab($id));
+        });
+    }
+    public function $MODEL_NAME_CAMEL$Tab($id)
+    {
+        $tab = new \Encore\Admin\Widgets\Tab();
+$TAB_ITEMS$
+        return $tab;
+    }

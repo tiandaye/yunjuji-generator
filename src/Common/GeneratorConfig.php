@@ -80,7 +80,13 @@ class GeneratorConfig
         /**
          * tian add end
          */
-
+        /**
+         * sun add tag
+         */
+        'isTagging',
+        /**
+         * sun add end
+         */
         'fieldsFile',
         'jsonFromGUI',
         'tableName',
