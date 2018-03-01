@@ -150,7 +150,7 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
     - tableOrder-字段在列表页或者表单页出现顺序, 升序排列, 如1会排在2的前面
     - rowEdit-是否支持行内编辑, true表示支持行内编辑, false表示不支持行内编辑
     - isDisplayPageDetail-表示字段是否在页内详情中显示, true表示在页内详情中显示, false表示不在页内详情中显示
-    - labelOptions-将状态字段的数值表示成对应的文字含义, 如"1:是,0否"
+    - labelOptions-将状态字段的数值表示成对应的文字含义, 如"1:是,0:否"
 - 例子
 ```
 [{
@@ -162,7 +162,7 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
     "rowEdit":true,
     "tableOrder": 1,
     "isDisplayPageDetail": true,
-    "labelOptions": "1:是,0否",
+    "labelOptions": "1:是,0:否",
     "fillable": false,
     "primary": true,
     "inForm": false,
