@@ -259,7 +259,7 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
         - value 字段的初始参数
         - type 字段数据类型 该参数的取值范围:
             - name 该字段的填充数据是人名, 无需初始参数
-            - enail 该字段的填充数据是邮件地址, 无需初始参数
+            - email 该字段的填充数据是邮件地址, 无需初始参数
             - username 该字段的填充数据是用户账户的名称, 无需初始参数
             - password 该字段的填充数据是密码, 需要初始参数, 如"123456", 表示密码的明文是"123456"
             - phone 该字段的天重置是手机号, 无需初始化参数
@@ -273,8 +273,8 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
             - randomInt 该字段填充数据是某个范围内随机的一个整形, 需要初始化参数, 如: "1,10", 表示从1~10
             - price 该字段填充数据是某个范围内的价格, 需要初始化参数, 如: "100,1000", 表示从100.00~1000.00
             - randomFloat 该字段填充数据是某个范围内的浮点数, 需要初始化参数, 如: "0,100", 表示从0.0~100.0
-            - randomElement 该字段填充数据是从给定几个参数中随机抽取一个, 需要初始化参数, 如: ['红', '黄', '蓝'], 表示从这三种颜色中随机取出一种
-            - randomElements 该字段填充数据是从给定几个参数中随机抽取多个, 需要初始化参数, 如: ['红', '黄', '蓝', 2], 表示从这三种颜色中随机抽取出两种, 最后一个元素数字2表示抽取两个
+            - randomElement 该字段填充数据是从给定几个参数中随机抽取一个, 需要初始化参数, 如: ["红", "黄", "蓝"], 表示从这三种颜色中随机取出一种
+            - randomElements 该字段填充数据是从给定几个参数中随机抽取多个, 需要初始化参数, 如: ["红", "黄", "蓝", 2], 表示从这三种颜色中随机抽取出两种, 最后一个元素数字2表示抽取两个
             - latitude 该字段填充数据是纬度, 无需初始化参数
             - longitude 该字段填充数据是经度, 无需初始化参数
             - address 该字段的填充数据地址, 无需初初始化参数
@@ -366,12 +366,12 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
    {
     "name": "color",
     "type": "randomElement",
-    "value": ['红', '黄', '蓝']
+    "value": ["红", "黄", "蓝"]
    },
    {
     "name": "movie_category",
     "type": "randomElements",
-    "value": ['历史', '战争', '剧情', 2]
+    "value": ["历史", "战争", "剧情", 2]
    },
    {
     "name": "latitude",
