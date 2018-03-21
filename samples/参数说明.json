@@ -1,0 +1,41 @@
+php artisan go3c:generateFieldJson 目录名
+
+1. 多个字段之间统一用 `;` 分隔， 最后一个字段不要加 `;`。
+2. created_at, updated_at, id字段默认添加, 不需要重新指定。`
+3. fields` , `foriegns` , `inForms` 等所有属性可以不按顺序, 并且可以根据实际情况选填。比如没有关联关系的模型 `relations` 属性就没有。
+
+所有的例子以 [媒资点播类资产](http://git.oschina.net/hzyrrjjsyxgs/ott/tree/master/model/entity/asset/video/vasset)为例
+
+fields:【字段】【格式:字段名:字段别名;】
+vasset_no: 视频编号; name: 名称; title: 标题; subtitle: 副标题; spell: 拼音; short_desc: 简述; long_desc: 详述; score: 评分; expiring_at: 失效日期; online_at: 上线日期; offline_at: 下线日期; published_at: 发布日期; season: 第几季; episode: 共几集; latest: 最近更新
+
+inForms: 【需要在编辑form里面显示的字段】【格式:字段名;】
+vasset_no;name;title;subtitle;spell;short_desc;long_desc;score;expiring_at;online_at;offline_at;published_at;season;episode;latest
+
+inIndexs:【是否需要在表格里面显示字段】【格式:字段名;】
+vasset_no;name;title;subtitle;spell;short_desc;long_desc;score;expiring_at;online_at;offline_at;published_at;season;episode;latest
+
+validations:【校验】【格式:字段名:校验规格(多个校验规则用|);】
+vasset_no:required|max:100;name:required;title:required;subtitle:required;spell:required
+
+htmlTypes:【控件类型】【格式:字段名:控件类型 】
+vasset_no:text;name:text;title:text;subtitle:text;spell:text;short_desc:text;long_desc:textarea;score:number;expiring_at:datetime;online_at:datetime;offline_at:datetime;published_at:datetime;season:text;episode:text;latest:text
+
+//数据库有关
+foriegns:【外键】【格式:字段名:表名(注意一般的表名都是下划线命名法, 并且加s), 映射字段名(如果相同可以省略);】
+vcat_no: vcats; vseason_no: vseasons, vseason_no; vyearcat_no: vyearcats; vareacat_no: vareacats; vareacat_no: vareacats; vlangcat_no: vlangcats
+
+nullables:【能否为null】【格式:字段名;】
+score;expiring_at;online_at;offline_at;published_at;season;episode;latest
+
+indexs:【索引】【格式:字段名;(复合索引目前没考虑)】
+vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
+
+dbTypes:【数据库字段类型】【格式:字段名:字段类型,字段长度(可选, 如果没有长度则 `,` 和 字段长度都可以不要);】
+vasset_no:string, 100;name:string, 100;title:string, 100;subtitle:string, 100;spell:string, 100;short_desc:string, 100; long_desc:text; score: decimal,10,2; expiring_at: timestamp;online_at: timestamp;offline_at:timestamp;published_at:timestamp;season:string, 10;episode:string, 10;latest:string, 10
+
+tags:【标签】【格式:模型名(大写,没s), 中间表名, 映射关系】
+"mtm,Role,user_roles,user_id,role_id"【设计有问题】
+
+relations:【关联关系】【格式: 关联关系类型(1t1:一对一, 1tm:一对多, mt1:反向一对多, m2m:多对多, hmt:远程一对多, mht:多态关联, mhm, mhtm, mhbm), 模型名(大写, 没s), 映射关系(具体分析)】
+"1tm,Writer,writer_id,id"【设计有问题】
