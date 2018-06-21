@@ -259,7 +259,7 @@ vasset_no;name;title;subtitle;spell;short_desc;long_desc;score
         - value 字段的初始参数
         - type 字段数据类型 该参数的取值范围:
             - name 该字段的填充数据是人名, 无需初始参数
-            - enail 该字段的填充数据是邮件地址, 无需初始参数
+            - email 该字段的填充数据是邮件地址, 无需初始参数
             - username 该字段的填充数据是用户账户的名称, 无需初始参数
             - password 该字段的填充数据是密码, 需要初始参数, 如"123456", 表示密码的明文是"123456"
             - phone 该字段的天重置是手机号, 无需初始化参数
