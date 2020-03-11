@@ -1,28 +1,28 @@
 <?php
-
 /**
- * @Author: admin
- * @Date:   2017-09-13 17:36:52
- * @Last Modified by:   admin
- * @Last Modified time: 2017-10-12 11:15:20
+ * Created by PhpStorm.
+ * User: tianwangchong
+ * Date: 2020-03-11
+ * Time: 22:42
  */
+
 return [
-	// ÃüÁîĞĞ
-	'command' => [
-		// `php` ÃüÁîÂ·¾¶
-		'php_command' => 'php'
-	],
-	// ²úÉú `fieldJson` µÄÅäÖÃ
-	'field_json' => [
-		'csv' => [
-			// ¶ÁÈ¡ `csv` Ê±µÄ±àÂë, `UTF-8` ºÍ `GBK`
-			'character_encoding' => 'GBK'
-		]
-	],
-	// Ä£°å
-	'templates' => [
-		'extend' => '',
-		'base' => 'yunjuji-generator'
-	],
-    'name' => 'tian',
+    // å‘½ä»¤è¡Œ
+    'command'    => [
+        // `php` å‘½ä»¤è·¯å¾„
+        'php_command' => 'php'
+    ],
+    // äº§ç”Ÿ `fieldJson` çš„é…ç½®
+    'field_json' => [
+        'csv' => [
+            // è¯»å– `csv` æ—¶çš„ç¼–ç , `UTF-8` å’Œ `GBK`
+            'character_encoding' => 'GBK'
+        ]
+    ],
+    // æ¨¡æ¿
+    'templates'  => [
+        'extend' => '',
+        'base'   => 'yunjuji-generator'
+    ],
+    'name'       => 'tian',
 ];
